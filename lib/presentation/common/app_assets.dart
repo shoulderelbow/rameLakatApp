@@ -100,5 +100,4 @@ class AppAssets {
   static final Widget sampleDocImage4Png = Image.asset(
     'images/sampleDocImage4.png',
   );
-
 }

@@ -15,6 +15,9 @@ class AppStrings {
   static const welcomeTextSubHeading = "Sign in to continue";
   static const termsAndConditionPart1 = "By signing in, you accept our";
   static const termsAndConditionPart2 = " Terms and Conditions";
+  static const login = "Login";
+  static const email = "email";
+  static const password = "password";
 
 // Login With Mobile
   static const continueText = "Continue";
@@ -43,6 +46,8 @@ class AppStrings {
   static const MyProfile = "My Profile";
 
 //Drawer
+  static const diseasesLabel = "Diseases";
+  static const medicalInstitutionsLabel = "Medical institutions";
   static const myAppointmentsLabel = "My Appointments";
   static const newAppointmentLabel = "New Appointment";
   static const medicalRecordsLabel = "Medical Records";
