@@ -49,6 +49,7 @@ Widget toolbarView(String label) => Container(
 
 Widget searchTextField() {
   return Card(
+    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
     elevation: 5,
     shadowColor: AppColors.primaryColorOp01,
     shape: RoundedRectangleBorder(
