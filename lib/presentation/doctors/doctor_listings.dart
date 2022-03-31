@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../common/app_colors.dart';
 import '../common/common_views.dart';
 
-class MedicalInstitutions extends StatelessWidget {
-  const MedicalInstitutions({Key? key}) : super(key: key);
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
+class DoctorListingScreen extends StatelessWidget {
+  const DoctorListingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class MedicalInstitutions extends StatelessWidget {
         children: [
           _titleHeader(),
           searchTextField(),
-          _allDiseasesContainer(),
+          _availableDoctorsContainer(),
         ],
       ),
     );
@@ -30,7 +32,7 @@ Widget _titleHeader() => Container(
   height: 25.0,
   alignment: Alignment.bottomLeft,
   child: const Text(
-    "Medical institutions",
+    "Available Doctors",
     style: TextStyle(
       fontSize: 20,
     ),
@@ -39,7 +41,7 @@ Widget _titleHeader() => Container(
 
 final List listViewItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-Widget _allDiseasesContainer() => Expanded(
+Widget _availableDoctorsContainer() => Expanded(
   child: Container(
     decoration: const BoxDecoration(
       border: Border(
@@ -54,7 +56,6 @@ Widget _allDiseasesContainer() => Expanded(
         return InkWell(
           radius: 0,
           onTap: () {
-            Navigator.of(context).pushNamed("/individual_institution");
           },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
@@ -64,25 +65,24 @@ Widget _allDiseasesContainer() => Expanded(
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.black,
-                    image: const DecorationImage(
-                      fit: BoxFit.fill,
-                      image: true ? NetworkImage("https://static01.nyt.com/images/2020/04/07/science/31VIRUS-DOCTORDISSENT2/merlin_171128892_e2c150b8-7b4c-4ef1-bddd-2b2488a411b7-articleLarge.jpg?quality=75&auto=webp&disable=upscale") : ExactAssetImage("../../images/sampleDocImage4.png/") as ImageProvider,
-                      //image: ExactAssetImage("../../images/sampleDocImage4.png/"),
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: true ? NetworkImage("https://epfamilydoctor.com/wp-content/uploads/2019/02/about.png") : ExactAssetImage("../../images/sampleDocImage4.png/") as ImageProvider,
                     ),
-                    borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    margin: const EdgeInsets.only(left:10),
+                    margin: const EdgeInsets.only(left: 5),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Name of the place",
+                          "Dr. X",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
@@ -94,7 +94,7 @@ Widget _allDiseasesContainer() => Expanded(
                           height: 5,
                         ),
                         Text(
-                          "Address",
+                          "Available Mon-Fri 9-15",
                           style: TextStyle(
                               color: Colors.black.withOpacity(0.4),
                               fontWeight: FontWeight.w300,
@@ -103,17 +103,27 @@ Widget _allDiseasesContainer() => Expanded(
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          "Extra info",
+                          "+38169555555",
                           style: TextStyle(
                               color: Colors.black.withOpacity(0.4),
                               fontWeight: FontWeight.w300,
-                              fontSize:
-                              14),
+                              fontSize: 14),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(
                           height: 5,
+                        ),
+                        RatingBarIndicator(
+                          rating: 3.4,
+                          itemBuilder: (context, index) => Icon(
+                            Icons.star,
+                            color: AppColors.ratingBarColor,
+                          ),
+                          itemCount: 5,
+                          itemSize: 15.0,
+                          unratedColor: Colors.black.withOpacity(0.2),
+                          direction: Axis.horizontal,
                         ),
                       ],
                     ),
@@ -127,4 +137,6 @@ Widget _allDiseasesContainer() => Expanded(
     ),
   ),
 );
+
+
 

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/rame_lakat_app.iml" filepath="$PROJECT_DIR$/rame_lakat_app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/rame_lakat_app_android.iml" filepath="$PROJECT_DIR$/android/rame_lakat_app_android.iml" />
     </modules>
   </component>
 </project>
