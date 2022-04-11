@@ -152,7 +152,12 @@ class LoginButton extends StatelessWidget {
           color: AppColors.primaryColor,
           fontWeight: FontWeight.w500,
           onPress: () async {
-            //Navigator.of(context).pushNamed('/questionnaire');
+            context.read<LoginBloc>().add(
+                  LoginButtonPressed(
+                      email: context.read<LoginBloc>().state.email,
+                      password: context.read<LoginBloc>().state.password),
+                );
+            Navigator.of(context).pushNamed('/dashboard');
           }),
       margin: const EdgeInsets.symmetric(vertical: 7),
     );

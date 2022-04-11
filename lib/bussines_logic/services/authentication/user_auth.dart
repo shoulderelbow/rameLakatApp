@@ -1,28 +1,30 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rame_lakat_app/data/models/user_model.dart' as user_model;
 
 class UserAuth {
-  final FirebaseAuth _firebaseAuth;
+  final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore fireStore;
 
-  UserAuth({required FirebaseAuth firebaseAuth}) : _firebaseAuth = firebaseAuth;
+  UserAuth({required  this.firebaseAuth, required this.fireStore});
 
-  Future<void> signInWithCredentials(String email, String password) {
-    return _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+  Future<user_model.User> signInWithCredentials(String email, String password) async {
+    await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    var document = await fireStore.collection('users').doc(firebaseAuth.currentUser?.uid ?? '').get();
+    var data = document.data();
+    return user_model.User(firstName: data!['userFirstName'], lastName: data['userLastName'], email: data['userEmail']);
   }
 
   Future<UserCredential> signUp(String email, String password) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+    return await firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
   }
 
   Future<Future<List>> signOut() async {
-    return Future.wait([_firebaseAuth.signOut()]);
+    return Future.wait([firebaseAuth.signOut()]);
   }
 
   Future<bool> isSignedIn() async {
-    final currentUser = await _firebaseAuth.currentUser;
+    final currentUser = firebaseAuth.currentUser;
     return currentUser != null;
-  }
-
-  Future<User?> getUser () async {
-    return await _firebaseAuth.currentUser;
   }
 }

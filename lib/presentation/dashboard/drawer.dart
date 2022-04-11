@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rame_lakat_app/bussines_logic/services/common/shared_prefs.dart';
 import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
@@ -73,20 +74,20 @@ class CustomDrawer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children:  [
                     Text(
-                      AppStrings.sampleDrawerHeaderText,
-                      style: TextStyle(
+                      '${SharedPrefs().getUser().firstName} ${SharedPrefs().getUser().lastName}',
+                      style: const TextStyle(
                           color: AppColors.primaryColor,
                           fontSize: 20,
                           fontWeight: FontWeight.w600),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     Text(
-                      AppStrings.sampleDrawerHeaderSubText,
-                      style: TextStyle(
+                      SharedPrefs().getUser().email,
+                      style: const TextStyle(
                           color: AppColors.darkTextColor,
                           fontSize: 16,
                           fontWeight: FontWeight.w500),
