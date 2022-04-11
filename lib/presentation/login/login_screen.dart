@@ -32,101 +32,17 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                _logo(),
-                _title(),
-                _welcomeText(),
+                const LogoWidget(),
+                const LoginTitleWidget(),
+                const WelcomeTextWidget(),
                 EmailInputField(emailController: _emailController),
                 PasswordInputField(passwordController: _passwordController),
-                _logInButton(),
-                _registrationButton(),
+                const LoginButton(),
+                const RegistrationButton(),
               ],
             ),
           ),
         ));
-  }
-
-  Widget _logo() {
-    return SizedBox(
-      child: AppAssets.blueHeartPng,
-      width: 70.0,
-    );
-  }
-
-  Widget _title() {
-    return Container(
-        margin: const EdgeInsets.symmetric(vertical: 20),
-        child: RichText(
-          textAlign: TextAlign.center,
-          text: const TextSpan(children: [
-            TextSpan(
-              text: AppStrings.appNamePart1,
-              style: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w600),
-            ),
-            TextSpan(
-              text: AppStrings.appNamePart2,
-              style: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w300),
-            ),
-          ]),
-        ));
-  }
-
-  Widget _welcomeText() {
-    return Container(
-        margin: const EdgeInsets.fromLTRB(0, 40, 0, 40),
-        child: Column(
-          children: const [
-            Text("Welcome",
-                style: TextStyle(
-                    color: AppColors.darkTextColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
-            Text("Please sign-in to continue",
-                style: TextStyle(
-                    color: AppColors.darkTextColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400))
-          ],
-        ));
-  }
-
-  Widget _logInButton() {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        child: elevatedButton(
-            text: "Sign-in",
-            color: AppColors.primaryColor,
-            fontWeight: FontWeight.w500,
-            onPress: () async {
-              try {
-                await _auth.signInWithEmailAndPassword(
-                    email: _emailController.text,
-                    password: _passwordController.text);
-                Navigator.of(context).pushNamed('/dashboard');
-              } catch (e) {
-                print(e);
-              }
-              //Navigator.of(context).pushNamed('/questionnaire');
-            }),
-        margin: const EdgeInsets.symmetric(vertical: 7));
-  }
-
-  Widget _registrationButton() {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        child: elevatedButton(
-            text: "Sign-up",
-            color: AppColors.primaryColor,
-            fontWeight: FontWeight.w500,
-            onPress: () {
-              Navigator.of(context).pushNamed('/registration');
-            }),
-        margin: const EdgeInsets.symmetric(vertical: 7));
   }
 }
 
@@ -220,6 +136,113 @@ class PasswordInputField extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: elevatedButton(
+          text: "Sign-in",
+          color: AppColors.primaryColor,
+          fontWeight: FontWeight.w500,
+          onPress: () async {
+            //Navigator.of(context).pushNamed('/questionnaire');
+          }),
+      margin: const EdgeInsets.symmetric(vertical: 7),
+    );
+  }
+}
+
+class RegistrationButton extends StatelessWidget {
+  const RegistrationButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: elevatedButton(
+          text: "Sign-up",
+          color: AppColors.primaryColor,
+          fontWeight: FontWeight.w500,
+          onPress: () {
+            Navigator.of(context).pushNamed('/registration');
+          }),
+      margin: const EdgeInsets.symmetric(vertical: 7),
+    );
+  }
+}
+
+class WelcomeTextWidget extends StatelessWidget {
+  const WelcomeTextWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 40, 0, 40),
+      child: Column(
+        children: const [
+          Text("Welcome",
+              style: TextStyle(
+                  color: AppColors.darkTextColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600)),
+          Text("Please sign-in to continue",
+              style: TextStyle(
+                  color: AppColors.darkTextColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400))
+        ],
+      ),
+    );
+  }
+}
+
+class LoginTitleWidget extends StatelessWidget {
+  const LoginTitleWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: const TextSpan(
+          children: [
+            TextSpan(
+              text: AppStrings.appNamePart1,
+              style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w600),
+            ),
+            TextSpan(
+              text: AppStrings.appNamePart2,
+              style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w300),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LogoWidget extends StatelessWidget {
+  const LogoWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      child: AppAssets.blueHeartPng,
+      width: 70.0,
     );
   }
 }

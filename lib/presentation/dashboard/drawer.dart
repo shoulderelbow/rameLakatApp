@@ -15,7 +15,7 @@ class CustomDrawer extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          _listItem(Image.network("https://d338t8kmirgyke.cloudfront.net/icons/icon_pngs/000/017/828/original/surgeon_6454422.png"), "Doctors", () {Navigator.of(context).pushNamed('/doctors');}),
+          _listItem(AppAssets.doctorImagePng, "Doctors", () {Navigator.of(context).pushNamed('/doctors');}),
           _listItem(
               AppAssets.myAppointmentIconPng, AppStrings.diseasesLabel,
                   () {

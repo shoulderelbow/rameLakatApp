@@ -10,13 +10,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Future<void> _emailTextChanged(
       EmailTextChanged event, Emitter<LoginState> emit) async {
-    print('email text changed: ${event.email}');
     emit(state.copyWith(email: event.email));
   }
 
   Future<void> _passwordTextChanged(
       PasswordTextChanged event, Emitter<LoginState> emit) async {
-    print('password text changed: ${event.password}');
     emit(state.copyWith(email: event.password));
+  }
+
+  Future<void> _loginButtonPushed(
+      LoginButtonPressed event, Emitter<LoginState> emit) async {
   }
 }
