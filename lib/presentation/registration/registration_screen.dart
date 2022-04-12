@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rame_lakat_app/bussines_logic/services/firebase/firebaseApi.dart';
 import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
@@ -17,6 +17,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final FirebaseApi fApi = FirebaseApi();
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +36,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 _title(),
                 _welcomeText(),
                 EmailInputField(emailController: _emailController),
+                FirstNameInputField(firstNameController: _firstNameController),
+                LastNameInputField(lastNameController: _lastNameController),
                 PasswordInputField(passwordController: _passwordController),
                 _registerButton(),
               ],
@@ -99,10 +104,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             color: AppColors.primaryColor,
             fontWeight: FontWeight.w500,
             onPress: () async {
-              //TODO Firebase registering
               try {
-                await _auth.createUserWithEmailAndPassword(
-                  email: _emailController.text, password: _passwordController.text);
+                final data = await _auth.createUserWithEmailAndPassword(
+                    email: _emailController.text,
+                    password: _passwordController.text);
+                await FirebaseApi.addUser(
+                    userEmail: _emailController.text,
+                    dateCreated: DateTime.now(),
+                    userPassword: _passwordController.text,
+                    userFirstName: _firstNameController.text,
+                    userLastName: _lastNameController.text,
+                    userId: data.user?.uid);
                 Navigator.of(context).pop();
               } catch (e) {
                 print(e);
@@ -110,8 +122,86 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             }),
         margin: const EdgeInsets.symmetric(vertical: 20));
   }
+}
 
+class FirstNameInputField extends StatelessWidget {
+  const FirstNameInputField({Key? key, required this.firstNameController})
+      : super(key: key);
 
+  final TextEditingController firstNameController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shadowColor: AppColors.primaryColorOp01,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 15),
+        child: TextField(
+          autofocus: false,
+          keyboardType: TextInputType.text,
+          controller: firstNameController,
+          style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding: const EdgeInsets.only(
+                  left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.black.withOpacity(0.2)),
+              hintText: "First name"),
+        ),
+      ),
+    );
+  }
+}
+
+class LastNameInputField extends StatelessWidget {
+  const LastNameInputField({Key? key, required this.lastNameController})
+      : super(key: key);
+
+  final TextEditingController lastNameController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shadowColor: AppColors.primaryColorOp01,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 15),
+        child: TextField(
+          autofocus: false,
+          keyboardType: TextInputType.text,
+          controller: lastNameController,
+          style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding: const EdgeInsets.only(
+                  left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.black.withOpacity(0.2)),
+              hintText: "Last name"),
+        ),
+      ),
+    );
+  }
 }
 
 class EmailInputField extends StatelessWidget {
@@ -147,7 +237,7 @@ class EmailInputField extends StatelessWidget {
                   fontSize: 18.0,
                   fontWeight: FontWeight.w300,
                   color: Colors.black.withOpacity(0.2)),
-              hintText: AppStrings.email),
+              hintText: "E-mail"),
         ),
       ),
     );
@@ -188,7 +278,7 @@ class PasswordInputField extends StatelessWidget {
                   fontSize: 18.0,
                   fontWeight: FontWeight.w300,
                   color: Colors.black.withOpacity(0.2)),
-              hintText: AppStrings.password),
+              hintText: "Password"),
         ),
       ),
     );
