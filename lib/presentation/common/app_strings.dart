@@ -48,6 +48,7 @@ class AppStrings {
 //Drawer
   static const diseasesLabel = "Diseases";
   static const medicalInstitutionsLabel = "Medical institutions";
+  static const simposiumLabel = 'Symposiums';
   static const myAppointmentsLabel = "My Appointments";
   static const newAppointmentLabel = "New Appointment";
   static const medicalRecordsLabel = "Medical Records";

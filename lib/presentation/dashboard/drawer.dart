@@ -42,6 +42,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 Navigator.of(context).pushNamed('/institutions');
               }),
           _listItem(
+              AppAssets.simposiumImagePng, AppStrings.simposiumLabel.tr(), () {
+                Navigator.of(context).pushNamed('/simposiums');
+          }),
+          _listItem(
               AppAssets.accountSettingsIconPng, AppStrings.MyProfile.tr(),
                   () {
                 Navigator.of(context).pushNamed('/doctor_details');

@@ -90,16 +90,11 @@ Widget _availableDoctorsContainer() => Expanded(
                     Container(
                       width: 80,
                       height: 80,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.black,
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: true
-                              ? NetworkImage(
-                                  "https://epfamilydoctor.com/wp-content/uploads/2019/02/about.png")
-                              : ExactAssetImage(
-                                      "../../images/sampleDocImage4.png/")
-                                  as ImageProvider,
+                          image: NetworkImage(doctors[index].pictureLocation ?? ''),
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),

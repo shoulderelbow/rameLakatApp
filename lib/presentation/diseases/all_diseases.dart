@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../bussines_logic/services/firebase/firebaseApi.dart';
@@ -85,11 +83,11 @@ Widget _allDiseasesContainer() => Expanded(
                     Container(
                       width: 80,
                       height: 80,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.black,
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: true ? NetworkImage("https://www.isglobal.org/documents/10179/7759027/Coronavirus+SARS-CoV-2+de+CDC+en+Unsplash") : ExactAssetImage("../../images/sampleDocImage4.png/") as ImageProvider,
+                          image: NetworkImage(diseases[index].pictureLocation ?? ""),
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),

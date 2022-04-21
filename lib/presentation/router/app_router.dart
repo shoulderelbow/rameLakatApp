@@ -10,6 +10,7 @@ import 'package:rame_lakat_app/presentation/medical_institutions/individual_medi
 import 'package:rame_lakat_app/presentation/medical_institutions/medical_institutions.dart';
 import 'package:rame_lakat_app/presentation/questionnaire/questionnaire_screen.dart';
 import 'package:rame_lakat_app/presentation/registration/registration_screen.dart';
+import 'package:rame_lakat_app/presentation/simposiums/all_simposiums.dart';
 
 
 import '../dashboard/my_profile.dart';
@@ -24,23 +25,25 @@ class AppRouter {
             builder: (_) => BlocProvider.value(
                 value: loginBloc, child: const LoginScreen()));
       case '/dashboard':
-        return MaterialPageRoute(builder: (_)=> const DashboardScreen());
+        return MaterialPageRoute(builder: (_)=>  DashboardScreen());
       case '/diseases':
-        return MaterialPageRoute(builder: (_)=> const AllDiseasesScreen());
+        return MaterialPageRoute(builder: (_)=>  AllDiseasesScreen());
       case '/institutions':
-        return MaterialPageRoute(builder: (_)=> const MedicalInstitutions());
+        return MaterialPageRoute(builder: (_)=>  MedicalInstitutions());
       case '/individual_disease':
-        return MaterialPageRoute(builder: (_)=> const IndividualDiseaseScreen());
+        return MaterialPageRoute(builder: (_)=>  IndividualDiseaseScreen());
       case '/individual_institution':
-        return MaterialPageRoute(builder: (_)=> const IndividualMedicalInstitution());
+        return MaterialPageRoute(builder: (_)=>  IndividualMedicalInstitution());
       case '/questionnaire':
-        return MaterialPageRoute(builder: (_)=> const QuestionnaireScreen());
+        return MaterialPageRoute(builder: (_)=>  QuestionnaireScreen());
       case '/doctors':
-        return MaterialPageRoute(builder: (_)=> const DoctorListingScreen());
+        return MaterialPageRoute(builder: (_)=>  DoctorListingScreen());
       case '/registration':
         return MaterialPageRoute(builder: (_)=> RegistrationScreen());
       case '/doctor_details':
         return MaterialPageRoute(builder: (_)=> DoctorsCard());
+      case '/simposiums':
+        return MaterialPageRoute(builder: (_)=> AllSimposiumsScreen());
       default:
         return null;
     }

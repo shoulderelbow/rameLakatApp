@@ -1,29 +1,29 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:rame_lakat_app/bussines_logic/services/firebase/firebaseApi.dart';
+import '../../bussines_logic/services/firebase/firebaseApi.dart';
+import '../../data/models/Disease.dart';
+import '../../data/models/Simposium.dart';
 import '../common/app_colors.dart';
 import '../common/common_views.dart';
-import 'package:rame_lakat_app/data/models/Institution.dart';
 
+List<Simposium> simposiums = [];
 
-List<Institution> institutions = [];
-
-class MedicalInstitutions extends StatefulWidget {
-  const MedicalInstitutions({Key? key}) : super(key: key);
+class AllSimposiumsScreen extends StatefulWidget {
+  const AllSimposiumsScreen({Key? key}) : super(key: key);
 
   @override
-  State<MedicalInstitutions> createState() => _MedicalInstitutionsState();
+  State<AllSimposiumsScreen> createState() => _AllSimposiumsState();
 }
 
-class _MedicalInstitutionsState extends State<MedicalInstitutions> {
+class _AllSimposiumsState extends State<AllSimposiumsScreen> {
 
-  void getInstitutions() async {
-    institutions = await FirebaseApi.getInstitutions();
+  void getSimposiums() async {
+    simposiums = await FirebaseApi.getSimposiums();
   }
 
   @override
-  void initState() {
-    getInstitutions();
+  void initState()  {
+    getSimposiums();
     super.initState();
   }
 
@@ -32,7 +32,7 @@ class _MedicalInstitutionsState extends State<MedicalInstitutions> {
     return Scaffold(
       backgroundColor: AppColors.backGroundColor,
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: const Size.fromHeight(50),
           child: appbarWithBack(context)),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -40,7 +40,7 @@ class _MedicalInstitutionsState extends State<MedicalInstitutions> {
         children: [
           _titleHeader(),
           searchTextField(),
-          _allDiseasesContainer(),
+          _allSimposiumsContainer(),
         ],
       ),
     );
@@ -50,17 +50,16 @@ class _MedicalInstitutionsState extends State<MedicalInstitutions> {
 Widget _titleHeader() => Container(
   margin: EdgeInsets.only(left: 20),
   height: 25.0,
-  alignment: Alignment.bottomLeft,
+  alignment: Alignment.centerLeft,
   child: Text(
-    "Medical institutions".tr(),
+    'Symposiums'.tr(),
     style: TextStyle(
       fontSize: 20,
     ),
   ),
 );
 
-
-Widget _allDiseasesContainer() => Expanded(
+Widget _allSimposiumsContainer() => Expanded(
   child: Container(
     decoration: BoxDecoration(
       border: Border(
@@ -70,12 +69,12 @@ Widget _allDiseasesContainer() => Expanded(
     child: ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: institutions.length,
+      itemCount: simposiums.length,
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
           radius: 0,
           onTap: () {
-            Navigator.of(context).pushNamed("/individual_institution", arguments: {'id': institutions[index].uniqueId},);
+            //Navigator.of(context).pushNamed("/individual_disease", arguments: {'id': diseases[index].uniqueId},);
           },
           child: Container(
             margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
@@ -88,22 +87,21 @@ Widget _allDiseasesContainer() => Expanded(
                   decoration: BoxDecoration(
                     color: Colors.black,
                     image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: NetworkImage(institutions[index].pictureLocation ?? ''),
-                      //image: ExactAssetImage("../../images/sampleDocImage4.png/"),
+                      fit: BoxFit.cover,
+                      image: NetworkImage(simposiums[index].pictureLocation ?? ""),
                     ),
-                    borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.only(left:10),
+                    margin: EdgeInsets.only(left: 10),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          institutions[index].name ??  " ",
+                          simposiums[index].name ?? "",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
@@ -115,7 +113,7 @@ Widget _allDiseasesContainer() => Expanded(
                           height: 5,
                         ),
                         Text(
-                          institutions[index].adress ?? ' ',
+                          simposiums[index].subject ?? '',
                           style: TextStyle(
                               color: Colors.black.withOpacity(0.4),
                               fontWeight: FontWeight.w300,
@@ -124,12 +122,11 @@ Widget _allDiseasesContainer() => Expanded(
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          institutions[index].longDescription ?? " ",
+                          simposiums[index].date ?? '',
                           style: TextStyle(
                               color: Colors.black.withOpacity(0.4),
                               fontWeight: FontWeight.w300,
-                              fontSize:
-                              14),
+                              fontSize: 14),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -148,4 +145,3 @@ Widget _allDiseasesContainer() => Expanded(
     ),
   ),
 );
-

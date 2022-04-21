@@ -108,4 +108,8 @@ class AppAssets {
   static final Widget doctorImagePng = Image.asset(
     'images/doctor.png',
   );
+
+  static final Widget simposiumImagePng = Image.asset(
+    'images/symposium.png',
+  );
 }

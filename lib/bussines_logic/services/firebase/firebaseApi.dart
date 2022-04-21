@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rame_lakat_app/data/models/Simposium.dart';
 import '../../../data/models/Doctor.dart';
 import '../../../data/models/Institution.dart';
 import 'package:rame_lakat_app/data/models/Disease.dart';
@@ -33,6 +34,17 @@ class FirebaseApi {
     return doctor;
   }
 
+  static Future<List<Simposium>> getSimposiums() async {
+    List<Simposium> simposiums = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("simposiums").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Simposium simposium = Simposium(name: data['name'], date: data['date'], uniqueId: data['uniqueId'], subject: data['subject'], pictureLocation: data['pictureLocation']);
+      simposiums.add(simposium);
+    }
+    return simposiums;
+  }
+
   static Future<List<Doctor>> getDoctors() async {
     List<Doctor> doctors = [];
     QuerySnapshot querySnapshot = await _dataBase.collection("doctors").get();
@@ -49,7 +61,7 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("diseases").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Disease disease = Disease(name: data['name']);
+      Disease disease = Disease(name: data['name'], pictureLocation: data['pictureLocation']);
       diseases.add(disease);
     }
     return diseases;
@@ -60,7 +72,7 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("institutions").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Institution institution = Institution(name: data['name'], adress: data['adress'], longDescription: data['longDescription'], shortDescription: data['shortDescription'], workingTimes: data['workingTimes']);
+      Institution institution = Institution(name: data['name'], adress: data['adress'], longDescription: data['longDescription'], shortDescription: data['shortDescription'], workingTimes: data['workingTimes'], pictureLocation: data['pictureLocation']);
       institutions.add(institution);
     }
     return institutions;
