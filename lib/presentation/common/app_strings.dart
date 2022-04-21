@@ -53,7 +53,7 @@ class AppStrings {
   static const medicalRecordsLabel = "Medical Records";
   static const forumLabel = "Forum";
   static const statisticsLabel = "Statistics";
-  static const accountSettingsLabel = "Account Settings";
+  static const accountSettingsLabel = "Account settings";
   static const helpLabel = "Help";
   static const logoutLabel = "Logout";
 

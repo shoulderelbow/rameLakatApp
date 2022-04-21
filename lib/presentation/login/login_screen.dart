@@ -8,6 +8,7 @@ import 'package:rame_lakat_app/presentation/common/common_views.dart';
 import 'package:rame_lakat_app/presentation/login/login_bloc.dart';
 import 'package:rame_lakat_app/presentation/login/login_state.dart';
 import 'package:rame_lakat_app/presentation/login/login_event.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -26,20 +27,22 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
         backgroundColor: AppColors.backGroundColor,
         body: SafeArea(
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const LogoWidget(),
-                const LoginTitleWidget(),
-                const WelcomeTextWidget(),
-                EmailInputField(emailController: _emailController),
-                PasswordInputField(passwordController: _passwordController),
-                const LoginButton(),
-                const RegistrationButton(),
-              ],
+          child: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const LogoWidget(),
+                  const LoginTitleWidget(),
+                  const WelcomeTextWidget(),
+                  EmailInputField(emailController: _emailController),
+                  PasswordInputField(passwordController: _passwordController),
+                  const LoginButton(),
+                  const RegistrationButton(),
+                ],
+              ),
             ),
           ),
         ));
@@ -148,7 +151,7 @@ class LoginButton extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       child: elevatedButton(
-          text: "Sign-in",
+          text: "Sign-in".tr(),
           color: AppColors.primaryColor,
           fontWeight: FontWeight.w500,
           onPress: () async {
@@ -172,7 +175,7 @@ class RegistrationButton extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       child: elevatedButton(
-          text: "Sign-up",
+          text: "Sign-up".tr(),
           color: AppColors.primaryColor,
           fontWeight: FontWeight.w500,
           onPress: () {
@@ -191,13 +194,13 @@ class WelcomeTextWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(0, 40, 0, 40),
       child: Column(
-        children: const [
-          Text("Welcome",
+        children: [
+          Text("welcome".tr(),
               style: TextStyle(
                   color: AppColors.darkTextColor,
                   fontSize: 22,
                   fontWeight: FontWeight.w600)),
-          Text("Please sign-in to continue",
+          Text("Please sign-in to continue".tr(),
               style: TextStyle(
                   color: AppColors.darkTextColor,
                   fontSize: 15,

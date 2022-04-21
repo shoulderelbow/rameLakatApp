@@ -11,6 +11,9 @@ import 'package:rame_lakat_app/presentation/medical_institutions/medical_institu
 import 'package:rame_lakat_app/presentation/questionnaire/questionnaire_screen.dart';
 import 'package:rame_lakat_app/presentation/registration/registration_screen.dart';
 
+
+import '../dashboard/my_profile.dart';
+
 class AppRouter {
   final LoginBloc loginBloc = LoginBloc();
 
@@ -36,6 +39,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_)=> const DoctorListingScreen());
       case '/registration':
         return MaterialPageRoute(builder: (_)=> RegistrationScreen());
+      case '/doctor_details':
+        return MaterialPageRoute(builder: (_)=> DoctorsCard());
       default:
         return null;
     }

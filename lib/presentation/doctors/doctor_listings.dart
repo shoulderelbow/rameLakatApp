@@ -1,9 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:rame_lakat_app/presentation/dashboard/my_profile.dart';
+import '../../data/models/Doctor.dart';
 import '../common/app_colors.dart';
 import '../common/common_views.dart';
-
 import 'package:rame_lakat_app/bussines_logic/services/firebase/firebaseApi.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
+
+List<Doctor> doctors = [];
 
 class DoctorListingScreen extends StatefulWidget {
   const DoctorListingScreen({Key? key}) : super(key: key);
@@ -14,16 +19,16 @@ class DoctorListingScreen extends StatefulWidget {
 
 class _DoctorListingScreenState extends State<DoctorListingScreen> {
 
-  getDoctors() async {
-    final data = await FirebaseApi.getDocs();
+  void getDoctors() async {
+    doctors = await FirebaseApi.getDoctors();
     print("///////////////////");
-    print(data);
+    print(doctors.length);
     print("///////////////////");
   }
 
   @override
   void initState()  {
-     getDoctors();
+    getDoctors();
     super.initState();
   }
   @override
@@ -50,19 +55,17 @@ Widget _titleHeader() => Container(
       margin: EdgeInsets.only(left: 20),
       height: 25.0,
       alignment: Alignment.bottomLeft,
-      child: const Text(
-        "Available Doctors",
+      child: Text(
+        "Available doctors".tr(),
         style: TextStyle(
           fontSize: 20,
         ),
       ),
     );
 
-final List listViewItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
 Widget _availableDoctorsContainer() => Expanded(
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(width: 0.5, color: Colors.black),
           ),
@@ -70,11 +73,15 @@ Widget _availableDoctorsContainer() => Expanded(
         child: ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          itemCount: listViewItems.length,
-          itemBuilder: (BuildContext context, int index) {
+          itemCount: doctors.length,
+          itemBuilder: (BuildContext context, int index){
             return InkWell(
               radius: 0,
-              onTap: () {},
+              onTap: () {
+                print("############################");
+                print(doctors[index].uniqueId);
+                print("############################");
+              },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                 child: Row(
@@ -104,32 +111,33 @@ Widget _availableDoctorsContainer() => Expanded(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Dr. X",
+                            Text(
+                              doctors[index].firstName ?? ' ',
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.w400,
+                                  fontWeight: FontWeight.w800,
                                   fontSize: 16),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(
+                             SizedBox(
                               height: 5,
                             ),
                             Text(
-                              "Available Mon-Fri 9-15",
+                              doctors[index].workingTimes ?? '',
                               style: TextStyle(
-                                  color: Colors.black.withOpacity(0.4),
-                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w800,
                                   fontSize: 14),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
+                            SizedBox(height: 5,),
                             Text(
-                              "+38169555555",
+                              doctors[index].phoneNumber ?? '',
                               style: TextStyle(
-                                  color: Colors.black.withOpacity(0.4),
-                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w800,
                                   fontSize: 14),
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,

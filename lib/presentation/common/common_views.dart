@@ -3,6 +3,8 @@ import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
 
+import 'app_styles.dart';
+
 ElevatedButton elevatedButton(
         {required String text,
         required Color color,
@@ -95,10 +97,12 @@ PreferredSizeWidget appBar(GlobalKey<ScaffoldState> globalKey, BuildContext cont
       actions: <Widget>[
         IconButton(
           icon: AppAssets.profileIconPng,
-          onPressed: () => {},
+          onPressed: () => {
+            Navigator.of(context).pushNamed('/doctor_details'),
+          },
           //onPressed: () => {context.navigateToScreen(MyProfile())},
         ),
-        const SizedBox(
+        SizedBox(
           width: 8,
         ),
       ],
@@ -110,7 +114,7 @@ Widget appbarWithBack(BuildContext context,
     backgroundColor: AppColors.backGroundColor,
     elevation: 0,
     leading: IconButton(
-      icon: const Icon(
+      icon:  Icon(
         Icons.arrow_back_ios,
         color: AppColors.primaryDark,
       ),
@@ -150,7 +154,7 @@ Widget textField(String hint, IconData iconData,
           controller: textEditingController,
           showCursor: !isReadonly,
           readOnly: isReadonly,
-          style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
+          style: TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -164,7 +168,7 @@ Widget textField(String hint, IconData iconData,
                 ),
                 onPressed: () {},
               ),
-              contentPadding: const EdgeInsets.only(
+              contentPadding: EdgeInsets.only(
                   left: 10, bottom: 12, top: 12, right: 10),
               hintStyle: TextStyle(
                   fontSize: 18.0,
@@ -172,3 +176,25 @@ Widget textField(String hint, IconData iconData,
                   color: Colors.black.withOpacity(0.5)),
               hintText: hint)),
     );
+
+class userContainer extends StatelessWidget {
+
+  String nekistring = '';
+  userContainer(this.nekistring);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        child: Center(child: Text(nekistring, style: userText(),)),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.black12,
+        ),
+        height: 60,
+        width: 80,
+      ),
+    );
+  }
+}
+

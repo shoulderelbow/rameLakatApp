@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:rame_lakat_app/data/models/user_model.dart';
+import 'package:rame_lakat_app/data/models/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefs {

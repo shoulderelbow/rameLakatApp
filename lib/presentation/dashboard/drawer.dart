@@ -1,12 +1,24 @@
+import 'dart:ui';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:rame_lakat_app/bussines_logic/services/common/shared_prefs.dart';
 import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
 
-class CustomDrawer extends StatelessWidget {
+
+
+
+class CustomDrawer extends StatefulWidget {
   const CustomDrawer({Key? key}) : super(key: key);
 
+  @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  var language;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -16,34 +28,61 @@ class CustomDrawer extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          _listItem(AppAssets.doctorImagePng, "Doctors", () {Navigator.of(context).pushNamed('/doctors');}),
+          _listItem(AppAssets.doctorImagePng, "Doctors".tr(), () {
+            Navigator.of(context).pushNamed('/doctors');
+          }),
           _listItem(
-              AppAssets.myAppointmentIconPng, AppStrings.diseasesLabel,
+              AppAssets.myAppointmentIconPng, AppStrings.diseasesLabel.tr(),
                   () {
                 Navigator.of(context).pushNamed('/diseases');
               }),
           _listItem(
-              AppAssets.newAppointmentsIconPng, AppStrings.medicalInstitutionsLabel,
+              AppAssets.newAppointmentsIconPng, AppStrings.medicalInstitutionsLabel.tr(),
                   () {
-                    Navigator.of(context).pushNamed('/institutions');
+                Navigator.of(context).pushNamed('/institutions');
               }),
           _listItem(
-              AppAssets.medicalRecordsIconPng, AppStrings.medicalRecordsLabel,
+              AppAssets.accountSettingsIconPng, AppStrings.MyProfile.tr(),
                   () {
+                Navigator.of(context).pushNamed('/doctor_details');
               }),
-          _listItem(AppAssets.statisticsIconPng, AppStrings.statisticsLabel, () {
-          }),
-          _listItem(
-              AppAssets.accountSettingsIconPng, AppStrings.MyProfile,
-                  () {
-              }),
-          _listItem(AppAssets.helpIconPng, AppStrings.helpLabel, () {}),
-          const SizedBox(
+          _listItem(AppAssets.helpIconPng, AppStrings.helpLabel.tr(), () {}),
+          SizedBox(
             height: 15,
           ),
-          _listItem(AppAssets.logoutIconPng, AppStrings.logoutLabel, () {})
+          Row(children: [
+            SizedBox(width: 15,),
+            GestureDetector(
+              onTap: (){
+                setState(() {
+                  language = context.locale.languageCode;
+                  if(language == 'sr') {
+                    setState(() {
+                      context.setLocale(Locale('en'));
+                    });
+                  }
+                });
+              },
+              child: Container(child: Image.network("https://e1.pngegg.com/pngimages/934/992/png-clipart-world-flag-icons-round-usa-flag-art-thumbnail.png", height: 44, width: 44,)),
+            ),
+            SizedBox(width: 30,),
+            GestureDetector(
+              onTap: (){
+                  setState(() {
+                    language = context.locale.languageCode;
+                    if(language == 'en') {
+                      setState(() {
+                        context.setLocale(Locale('sr'));
+                      });
+                    }
+                  });
+                },
+              child: Container(child: Image.network("https://aux.iconspalace.com/uploads/1082282745.png", height: 32, width: 32,)),
+            ),
+    ],),
+          _listItem(AppAssets.logoutIconPng, AppStrings.logoutLabel.tr(), () {})
         ],
-      ),
+    ),
     );
   }
 
@@ -74,9 +113,13 @@ class CustomDrawer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children:  [
+                  children: [
                     Text(
-                      '${SharedPrefs().getUser().firstName} ${SharedPrefs().getUser().lastName}',
+                      '${SharedPrefs()
+                          .getUser()
+                          .firstName} ${SharedPrefs()
+                          .getUser()
+                          .lastName}',
                       style: const TextStyle(
                           color: AppColors.primaryColor,
                           fontSize: 20,
@@ -86,7 +129,9 @@ class CustomDrawer extends StatelessWidget {
                       height: 5,
                     ),
                     Text(
-                      SharedPrefs().getUser().email,
+                      SharedPrefs()
+                          .getUser()
+                          .email,
                       style: const TextStyle(
                           color: AppColors.darkTextColor,
                           fontSize: 16,
@@ -132,3 +177,4 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 }
+
