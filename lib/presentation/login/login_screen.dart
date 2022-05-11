@@ -1,14 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
 import 'package:rame_lakat_app/presentation/common/common_views.dart';
-import 'package:rame_lakat_app/presentation/login/login_bloc.dart';
-import 'package:rame_lakat_app/presentation/login/login_state.dart';
-import 'package:rame_lakat_app/presentation/login/login_event.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../bussines_logic/services/authentication/user_auth.dart';
+import '../../bussines_logic/services/common/shared_prefs.dart';
+
+String globalPassword = "";
+String globalEmail = "";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,8 +21,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +35,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  SizedBox(height: 50,),
                   const LogoWidget(),
                   const LoginTitleWidget(),
                   const WelcomeTextWidget(),
-                  EmailInputField(emailController: _emailController),
-                  PasswordInputField(passwordController: _passwordController),
+                  EmailInputField(),
+                  PasswordInputField(),
                   const LoginButton(),
                   const RegistrationButton(),
                 ],
@@ -50,10 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 class EmailInputField extends StatelessWidget {
-  const EmailInputField({Key? key, required this.emailController})
+  const EmailInputField({Key? key})
       : super(key: key);
 
-  final TextEditingController emailController;
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +68,9 @@ class EmailInputField extends StatelessWidget {
         padding: const EdgeInsets.only(left: 15),
         child: TextField(
           onChanged: (email) {
-            context.read<LoginBloc>().add(EmailTextChanged(email: email));
+            globalEmail = email;
           },
-          autofocus: false,
-          keyboardType: TextInputType.text,
-          controller: emailController,
+          autofocus: true,
           style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -93,15 +92,11 @@ class EmailInputField extends StatelessWidget {
 }
 
 class PasswordInputField extends StatelessWidget {
-  const PasswordInputField({Key? key, required this.passwordController})
+  const PasswordInputField({Key? key})
       : super(key: key);
-
-  final TextEditingController passwordController;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
-      builder: (context, state) {
         return Card(
           elevation: 3,
           shadowColor: AppColors.primaryColorOp01,
@@ -112,14 +107,10 @@ class PasswordInputField extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15),
             child: TextField(
               onChanged: (password) {
-                context
-                    .read<LoginBloc>()
-                    .add(PasswordTextChanged(password: password));
+                globalPassword = password;
               },
-              autofocus: false,
-              keyboardType: TextInputType.text,
+              autofocus: true,
               obscureText: true,
-              controller: passwordController,
               style:
                   const TextStyle(color: AppColors.primaryColor, fontSize: 18),
               decoration: InputDecoration(
@@ -138,8 +129,6 @@ class PasswordInputField extends StatelessWidget {
             ),
           ),
         );
-      },
-    );
   }
 }
 
@@ -155,13 +144,79 @@ class LoginButton extends StatelessWidget {
           color: AppColors.primaryColor,
           fontWeight: FontWeight.w500,
           onPress: () async {
-            context.read<LoginBloc>().add(
-                  LoginButtonPressed(
-                      email: context.read<LoginBloc>().state.email,
-                      password: context.read<LoginBloc>().state.password),
-                );
-            Navigator.of(context).pushNamed('/dashboard');
-          }),
+            bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(globalEmail);
+
+            if(globalEmail == "") {
+              showDialog(context: context, builder: (context) =>
+                  AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyEmail".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+              );
+            }
+            else if(globalPassword == "") {
+              showDialog(context: context, builder: (context) =>
+                  AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyPassword".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+              );
+            }else if(emailValid == false) {
+              showDialog(context: context, builder: (context) =>
+                  AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emailFormatIncorrect".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+              );
+            }else {
+              UserAuth userAuthService = UserAuth(firebaseAuth: FirebaseAuth.instance, fireStore: FirebaseFirestore.instance);
+              var user = await userAuthService.signInWithCredentials(globalEmail, globalPassword);
+
+              if(user.email != ""){
+                SharedPrefs().setUser(user);
+                Navigator.of(context).pushNamed('/dashboard');
+              }else{
+                showDialog(context: context, builder: (context) =>
+                    AlertDialog(
+                      title: Text('Error'.tr()),
+                      content: Text("emailOrPasswordIncorrect".tr()),
+                      actions: <Widget>[
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Back".tr()),
+                        ),
+                      ],
+                    ));
+              }
+            }
+            }
+          ),
       margin: const EdgeInsets.symmetric(vertical: 7),
     );
   }
@@ -243,6 +298,8 @@ class LoginTitleWidget extends StatelessWidget {
   }
 }
 
+
+
 class LogoWidget extends StatelessWidget {
   const LogoWidget({Key? key}) : super(key: key);
 
@@ -254,3 +311,5 @@ class LogoWidget extends StatelessWidget {
     );
   }
 }
+
+//globalEmail != null && globalEmail != "" && globalPassword != null && globalPassword != "" && emailValid

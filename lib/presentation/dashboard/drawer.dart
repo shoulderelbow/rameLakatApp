@@ -1,14 +1,14 @@
 import 'dart:ui';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rame_lakat_app/bussines_logic/services/common/shared_prefs.dart';
 import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
 
-
-
+import '../../bussines_logic/services/authentication/user_auth.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({Key? key}) : super(key: key);
@@ -28,65 +28,78 @@ class _CustomDrawerState extends State<CustomDrawer> {
           const SizedBox(
             height: 15,
           ),
-          _listItem(AppAssets.doctorImagePng, "Doctors".tr(), () {
-            Navigator.of(context).pushNamed('/doctors');
+          _listItem(AppAssets.accountSettingsIconPng, AppStrings.MyProfile.tr(), () {
+            Navigator.of(context).pushNamed('/my_profile');
           }),
-          _listItem(
-              AppAssets.myAppointmentIconPng, AppStrings.diseasesLabel.tr(),
-                  () {
-                Navigator.of(context).pushNamed('/diseases');
-              }),
-          _listItem(
-              AppAssets.newAppointmentsIconPng, AppStrings.medicalInstitutionsLabel.tr(),
-                  () {
-                Navigator.of(context).pushNamed('/institutions');
-              }),
-          _listItem(
-              AppAssets.simposiumImagePng, AppStrings.simposiumLabel.tr(), () {
-                Navigator.of(context).pushNamed('/simposiums');
+          _listItem(AppAssets.diseases, AppStrings.diseasesLabel.tr(), () {
+            Navigator.of(context).pushNamed('/diseases');
           }),
-          _listItem(
-              AppAssets.accountSettingsIconPng, AppStrings.MyProfile.tr(),
-                  () {
-                Navigator.of(context).pushNamed('/doctor_details');
-              }),
-          _listItem(AppAssets.helpIconPng, AppStrings.helpLabel.tr(), () {}),
+          _listItem(AppAssets.medicalInstitutions, AppStrings.medicalInstitutionsLabel.tr(), () {
+            Navigator.of(context).pushNamed('/institutions');
+          }),
+          _listItem(AppAssets.simposiumImagePng, AppStrings.simposiumLabel.tr(), () {
+            Navigator.of(context).pushNamed('/simposiums');
+          }),
+          _listItem(AppAssets.podcastIconPng, AppStrings.podcastLabel.tr(), () {
+            Navigator.of(context).pushNamed('/podcasts_and_materials');
+          }),
           SizedBox(
             height: 15,
           ),
-          Row(children: [
-            SizedBox(width: 15,),
-            GestureDetector(
-              onTap: (){
-                setState(() {
-                  language = context.locale.languageCode;
-                  if(language == 'sr') {
-                    setState(() {
-                      context.setLocale(Locale('en'));
-                    });
-                  }
-                });
-              },
-              child: Container(child: Image.network("https://e1.pngegg.com/pngimages/934/992/png-clipart-world-flag-icons-round-usa-flag-art-thumbnail.png", height: 44, width: 44,)),
-            ),
-            SizedBox(width: 30,),
-            GestureDetector(
-              onTap: (){
+          Row(
+            children: [
+              SizedBox(
+                width: 25,
+              ),
+              GestureDetector(
+                onTap: () {
                   setState(() {
                     language = context.locale.languageCode;
-                    if(language == 'en') {
+                    if (language == 'sr') {
+                      setState(() {
+                        context.setLocale(Locale('en'));
+                      });
+                    }
+                  });
+                },
+                child: Container(
+                    child: Image.asset(
+                  "images/usaflag.png",
+                  height: 30,
+                  width: 30,
+                )),
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    language = context.locale.languageCode;
+                    if (language == 'en') {
                       setState(() {
                         context.setLocale(Locale('sr'));
                       });
                     }
                   });
                 },
-              child: Container(child: Image.network("https://aux.iconspalace.com/uploads/1082282745.png", height: 32, width: 32,)),
-            ),
-    ],),
-          _listItem(AppAssets.logoutIconPng, AppStrings.logoutLabel.tr(), () {})
+                child: Container(
+                    child: Image.asset(
+                  "images/serbiaflag.png",
+                  height: 32,
+                  width: 32,
+                )),
+              ),
+            ],
+          ),
+          _listItem(AppAssets.logoutIconPng, AppStrings.logoutLabel.tr(), () async {
+            UserAuth userAuthService = UserAuth(firebaseAuth: FirebaseAuth.instance, fireStore: FirebaseFirestore.instance);
+            await userAuthService.signOut();
+            SharedPrefs().removeUser();
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          })
         ],
-    ),
+      ),
     );
   }
 
@@ -103,9 +116,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
               Container(
                 width: 75.0,
                 height: 75.0,
-                child: AppAssets.profileImagePng,
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage("https://idsb.tmgrup.com.tr/ly/uploads/images/2021/09/08/thumbs/800x531/142774.jpg"),
+                ),
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(50.0)),
+                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
                   border: Border.all(
                     color: Colors.white,
                     width: 3.0,
@@ -119,27 +134,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${SharedPrefs()
-                          .getUser()
-                          .firstName} ${SharedPrefs()
-                          .getUser()
-                          .lastName}',
-                      style: const TextStyle(
-                          color: AppColors.primaryColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600),
+                      '${SharedPrefs().getUser().firstName} ${SharedPrefs().getUser().lastName}',
+                      style: const TextStyle(color: AppColors.primaryColor, fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(
                       height: 5,
                     ),
                     Text(
-                      SharedPrefs()
-                          .getUser()
-                          .email,
-                      style: const TextStyle(
-                          color: AppColors.darkTextColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500),
+                      SharedPrefs().getUser().email,
+                      style: const TextStyle(color: AppColors.darkTextColor, fontSize: 16, fontWeight: FontWeight.w500),
                     )
                   ],
                 ),
@@ -149,7 +152,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         ),
       ),
       decoration: const BoxDecoration(
-        color: AppColors.backGroundColor,
+          color: AppColors.backGroundColor,
       ),
     );
   }
@@ -163,17 +166,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(child: imageAsset, height: 22, alignment: Alignment.center,),
-            const SizedBox(
+            Container(
+              child: imageAsset,
+              height: 22,
+              alignment: Alignment.center,
+            ),
+            SizedBox(
               width: 12,
             ),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: AppColors.commonTextColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400),
+              style: TextStyle(color: AppColors.commonTextColor, fontSize: 16, fontWeight: FontWeight.w400),
             )
           ],
         ),
@@ -181,4 +185,3 @@ class _CustomDrawerState extends State<CustomDrawer> {
     );
   }
 }
-

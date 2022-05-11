@@ -1,29 +1,29 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:rame_lakat_app/bussines_logic/services/firebase/firebaseApi.dart';
+import 'package:rame_lakat_app/data/models/parameter.dart';
 import '../../data/models/Disease.dart';
+import '../../data/models/Survey.dart';
 import '../common/app_colors.dart';
 import '../common/common_views.dart';
 
-class IndividualDiseaseScreen extends StatefulWidget {
-  const IndividualDiseaseScreen({Key? key}) : super(key: key);
 
+class IndividualDiseaseScreen extends StatefulWidget {
+  const IndividualDiseaseScreen({Key? key, required this.parameter}) : super(key: key);
+  final Parameter parameter;
   @override
   State<IndividualDiseaseScreen> createState() => _IndividualDiseaseScreenState();
 }
 
 class _IndividualDiseaseScreenState extends State<IndividualDiseaseScreen> {
   late Disease disease;
+  late List<Survey> survey;
 
-  Future<void> getDisease(String id) async {
+  Future<void> getDiseaseAndSurvey(String id) async {
     disease = await FirebaseApi.getDisease(id);
+    survey = await FirebaseApi.getSurveys();
   }
 
-  @override
-  void initState() {
-    getDisease('66QGVEWNcRhuynla4uGI');
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,20 +31,11 @@ class _IndividualDiseaseScreenState extends State<IndividualDiseaseScreen> {
       backgroundColor: AppColors.backGroundColor,
       appBar: PreferredSize(preferredSize: Size.fromHeight(50), child: appbarWithBack(context)),
       body: FutureBuilder(
-        future: getDisease('66QGVEWNcRhuynla4uGI'),
+        future: getDiseaseAndSurvey(widget.parameter.id),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              return Container(
-                height: MediaQuery.of(context).size.height,
-                child: Center(
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-              );
+              return Center(child: CircularProgressIndicator(color: Colors.black, value: 50, ));
             case ConnectionState.done:
               return SafeArea(
                 child: SingleChildScrollView(
@@ -61,7 +52,10 @@ class _IndividualDiseaseScreenState extends State<IndividualDiseaseScreen> {
                               vertical: 5,
                             ),
                           ),
-                          Flexible(child: Text(disease.name ?? '', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
+                          Container(
+                              child: Text(
+                                  disease.name ?? '',
+                                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
                         ],
                       ),
                       Divider(color: AppColors.primaryDark, indent: 15, endIndent: 15, thickness: 1),
@@ -69,7 +63,7 @@ class _IndividualDiseaseScreenState extends State<IndividualDiseaseScreen> {
                         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Description of the disease - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                          "Description of the disease - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever",
                         ),
                       ),
                       Container(
@@ -84,7 +78,35 @@ class _IndividualDiseaseScreenState extends State<IndividualDiseaseScreen> {
                         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         alignment: Alignment.centerLeft,
                         child: Text(
-                            "Description of how to treat it - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."),
+                            "Description of how to treat it - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap"),
+                      ),
+                      SizedBox(height: 50,),
+                      Padding(
+                        padding: EdgeInsets.only(top: 80, left: 200),
+                        child: Stack(
+                          children: [
+                            Container(
+                            width: 160,
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: [BoxShadow(blurRadius: 0, color: Colors.white, spreadRadius: 0)]),
+                            child: TextButton(
+                              onPressed: (){
+                              final parameter = Parameter(id: disease.uniqueId ?? "");
+                              Navigator.of(context).pushNamed("/individual_surveys", arguments: parameter);
+                            }, child:
+                            Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  Text("URADI TEST", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 15)),
+                                  SizedBox(width: 10,),
+                                  Icon(Icons.arrow_forward, color: Colors.black),
+                                ],
+                              ),
+                            ),
+                            ),
+                          ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

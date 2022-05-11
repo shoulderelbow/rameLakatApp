@@ -1,6 +1,7 @@
-class News{
-  final String? name;
-  final String? type;
+class Answer{
+  final String name;
+  bool isSelected = false;
+  final String uniqueId;
 
-  News({this.name, this.type});
+  Answer({required this.name, required this.uniqueId});
 }

@@ -7,10 +7,10 @@ import 'package:rame_lakat_app/presentation/common/common_views.dart';
 import 'package:rame_lakat_app/presentation/login/login_screen.dart';
 import '../../bussines_logic/services/firebase/firebaseApi.dart';
 import '../../data/models/News.dart';
+import '../../data/models/parameter.dart';
 import 'drawer.dart';
 
 List<News> news = [];
-
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -22,15 +22,10 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardState extends State<DashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void getNews() async {
+  Future<void> getNews() async {
     news = await FirebaseApi.getNews();
   }
 
-  @override
-  void initState() {
-    getNews();
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,79 +35,97 @@ class _DashboardState extends State<DashboardScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              toolbarView(AppStrings.dashboardLabel.tr()),
+              toolbarView(AppStrings.newsLabel.tr()),
               Container(
                 child: searchTextField(),
                 margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
               ),
-              Expanded(
-                child: _gridView(),
-              )
+              FutureBuilder(
+                  future: getNews(),
+                  builder: (BuildContext context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      return _listView();
+                    }
+                  })
             ],
           ),
         ),
         drawer: CustomDrawer());
   }
 
-  Widget _gridView() => Container(
-    margin: EdgeInsets.symmetric(horizontal: 10),
-    child: GridView.count(
-      crossAxisCount: 2,
-      childAspectRatio: 0.7,
-      children: getCards(),
-    ),
-  );
-
-  Widget _dashboardCard(String title, String news) {
-    return Padding(
-        padding: const EdgeInsets.only(top: 10, left: 7, right: 7, bottom: 0),
-        child: Card(
-          elevation: 10,
-          shadowColor: AppColors.primaryColorOp01,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: InkWell(
-            onTap: () {
-            },
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(news,
-                        style: TextStyle(
-                            color: Colors.blueAccent,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800)),
+  Widget _listView() => Expanded(
+    child: Container(
+          child: ListView.builder(
+            itemCount: news.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: EdgeInsets.only(top: 7, left: 7, right: 7, bottom: 0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: NetworkImage(news[index].pictureLocation ?? ''), fit: BoxFit.cover, opacity: 0.8),
                   ),
-                  Divider(thickness: 2,),
-                  Text(title,
-                      style: TextStyle(
-                          color: AppColors.primaryDark,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500)),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 120.0,
-                      height: 120.0,
+                  child: InkWell(
+                    onTap: () {
+                      final parameter = Parameter(id: news[index].uniqueId ?? '');
+                      Navigator.of(context).pushNamed('/individual_news', arguments: parameter);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              Align(alignment: Alignment.topLeft),
+                              Container(
+                                decoration: (BoxDecoration(
+                                  color: Colors.white.withOpacity(0.5),
+                                )),
+                                child: Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    news[index].type ?? '',
+                                    style: TextStyle(color: Color(0xFF0B223D), fontSize: 30, fontWeight: FontWeight.w800),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 120,
+                          ),
+                          Stack(
+                            children: [
+                              Align(alignment: Alignment.centerRight),
+                              Container(
+                                decoration: (BoxDecoration(color: Colors.white.withOpacity(0.5))),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(5.0),
+                                      child: Text(
+                                        news[index].name ?? '',
+                                        style: TextStyle(color: Color(0xFF0B223D), fontSize: 25, fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    Text(
+                                      "${news[index].date?.day.toString()}.${news[index].date?.month.toString()}.${news[index].date?.year.toString()}",
+                                      style: TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  )
-                ],
-              ),
-            ),
+                  ),
+                ),
+              );
+            },
           ),
-        ));
-  }
-
-  List<Widget> getCards() {
-    print("*********************");
-    List<Widget> cardWidgets = [];
-    for(int i=0; i<news.length; i++){
-      cardWidgets.add(_dashboardCard(news[i].name ?? "", news[i].type ?? ""));
-    }
-    return cardWidgets;
-  }
+        ),
+  );
 }

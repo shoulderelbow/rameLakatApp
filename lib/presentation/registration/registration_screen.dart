@@ -19,6 +19,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _confirmpasswordController = TextEditingController();
   final FirebaseApi fApi = FirebaseApi();
 
   @override
@@ -26,21 +28,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Scaffold(
         backgroundColor: AppColors.backGroundColor,
         body: SafeArea(
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                _logo(),
-                _title(),
-                _welcomeText(),
-                EmailInputField(emailController: _emailController),
-                FirstNameInputField(firstNameController: _firstNameController),
-                LastNameInputField(lastNameController: _lastNameController),
-                PasswordInputField(passwordController: _passwordController),
-                _registerButton(),
-              ],
+          child: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Stack(
+                children: [
+                  GestureDetector(
+                      child: Icon(Icons.arrow_back),
+                      onTap: (){Navigator.pop(context);
+                      },
+                  ),
+                  Align(alignment: Alignment.topLeft),
+                  Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    _logo(),
+                    _title(),
+                    _welcomeText(),
+                    FirstNameInputField(firstNameController: _firstNameController),
+                    LastNameInputField(lastNameController: _lastNameController),
+                    UsernameInputField(usernameController: _usernameController),
+                    EmailInputField(emailController: _emailController),
+                    PasswordInputField(passwordController: _passwordController),
+                    ConfirmPasswordInputField(confirmpasswordController: _confirmpasswordController),
+                    _registerButton(),
+                  ],
+                ),
+              ],),
             ),
           ),
         ));
@@ -279,6 +294,88 @@ class PasswordInputField extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                   color: Colors.black.withOpacity(0.2)),
               hintText: "Password"),
+        ),
+      ),
+    );
+  }
+}
+
+class ConfirmPasswordInputField extends StatelessWidget {
+  const ConfirmPasswordInputField({Key? key, required this.confirmpasswordController})
+      : super(key: key);
+
+  final TextEditingController confirmpasswordController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shadowColor: AppColors.primaryColorOp01,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 15),
+        child: TextField(
+          autofocus: false,
+          keyboardType: TextInputType.text,
+          obscureText: true,
+          controller: confirmpasswordController,
+          style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding: const EdgeInsets.only(
+                  left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.black.withOpacity(0.2)),
+              hintText: "Confirm password"),
+        ),
+      ),
+    );
+  }
+}
+
+class UsernameInputField extends StatelessWidget {
+  const UsernameInputField({Key? key, required this.usernameController})
+      : super(key: key);
+
+  final TextEditingController usernameController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shadowColor: AppColors.primaryColorOp01,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 15),
+        child: TextField(
+          autofocus: false,
+          keyboardType: TextInputType.text,
+          obscureText: true,
+          controller: usernameController,
+          style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding: const EdgeInsets.only(
+                  left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.black.withOpacity(0.2)),
+              hintText: "Username"),
         ),
       ),
     );

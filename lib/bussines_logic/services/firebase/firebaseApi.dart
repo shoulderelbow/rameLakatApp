@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:rame_lakat_app/data/models/PostedMaterial.dart';
 import 'package:rame_lakat_app/data/models/Simposium.dart';
+import '../../../data/models/Answer.dart';
 import '../../../data/models/Doctor.dart';
 import '../../../data/models/Institution.dart';
 import 'package:rame_lakat_app/data/models/Disease.dart';
-
 import '../../../data/models/News.dart';
+import '../../../data/models/Podcast.dart';
+import '../../../data/models/Question.dart';
+import '../../../data/models/Survey.dart';
 
 final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
 
@@ -16,41 +23,65 @@ class FirebaseApi {
   static Future<Institution> getInstitution(String id) async {
     var institutiondata = await _dataBase.collection("institutions").doc(id).get();
 
-    Institution institution = Institution(name: institutiondata['name']);
+    Institution institution = Institution(name: institutiondata['name'], pictureLocation: institutiondata['pictureLocation'], adress: institutiondata['adress'], workingTimes: institutiondata['workingTimes'], phone: institutiondata['phone']);
     return institution;
   }
 
   static Future<Disease> getDisease(String id) async {
     var diseasesdata = await _dataBase.collection("diseases").doc(id).get();
-    Disease disease = Disease(name: diseasesdata['name']);
+    Disease disease = Disease(name: diseasesdata['name'], uniqueId: diseasesdata['uniqueId']);
     return disease;
   }
 
-  static Future<Doctor> getDoctor(String id) async {
-    var doctorData = await _dataBase.collection("doctors").doc(id).get();
+  static Future<News> getNew(String id) async {
+    var vesti = await _dataBase.collection("news").doc(id).get();
+    Timestamp timestamp = vesti['date'];
+    DateTime date = timestamp.toDate();
+    News news = News(name: vesti['name'], pictureLocation: vesti['pictureLocation'], type: vesti['type'], uniqueId: vesti['uniqueId'], date: date);
+    return news;
+  }
+  
+  static Future<List<Podcast>> getPodcasts() async {
+    List<Podcast> podcasts = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("podcasts").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Podcast podcast = Podcast(name: data['name'], link: data['link']);
+      podcasts.add(podcast);
+    }
+    return podcasts;
+  }
 
-    Doctor doctor = Doctor(firstName: doctorData["firstName"], lastName: doctorData["lastName"]);
-
-    return doctor;
+  static Future<List<Survey>> getSurveys() async {
+    List<Survey> surveys = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("tests").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Survey survey = Survey(name: data['name'], uniqueId: data['uniqueId'], pictureLocation: data['pictureLocation'], suggestion: data['suggesiton'], diseaseId: data['diseaseId'] );
+      surveys.add(survey);
+    }
+    return surveys;
   }
 
   static Future<List<Simposium>> getSimposiums() async {
     List<Simposium> simposiums = [];
-    QuerySnapshot querySnapshot = await _dataBase.collection("simposiums").get();
+    QuerySnapshot querySnapshot = await _dataBase.collection("simposiums").orderBy('date', descending: true).get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Simposium simposium = Simposium(name: data['name'], date: data['date'], uniqueId: data['uniqueId'], subject: data['subject'], pictureLocation: data['pictureLocation']);
+      Timestamp timestamp = data['date'];
+      DateTime date = timestamp.toDate();
+      Simposium simposium = Simposium(name: data['name'], date: date, uniqueId: data['uniqueId'], subject: data['subject'], pictureLocation: data['pictureLocation']);
       simposiums.add(simposium);
     }
     return simposiums;
   }
 
-  static Future<List<Doctor>> getDoctors() async {
+  static Future<List<Doctor>> getDoctors(String id) async {
     List<Doctor> doctors = [];
-    QuerySnapshot querySnapshot = await _dataBase.collection("doctors").get();
+    QuerySnapshot querySnapshot = await _dataBase.collection("institutions").doc(id).collection("doctors").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
-      var data = querySnapshot.docs[i].data() as Map;
-      Doctor doctor = Doctor(firstName: data['firstName'], lastName: data['lastName'], fieldOfExpertise: data['fieldOfExpertise'], institution: data['institution'], phoneNumber: data['phoneNumber'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId'], workingTimes: data['workingTimes']);
+      var doctorData = querySnapshot.docs[i].data() as Map;
+      Doctor doctor = Doctor(name: doctorData["name"], email: doctorData["email"], phone: doctorData["phone"], fieldOfExpertise: doctorData["fieldOfExpertise"], pictureLocation: doctorData['pictureLocation']);
       doctors.add(doctor);
     }
     return doctors;
@@ -61,7 +92,7 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("diseases").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Disease disease = Disease(name: data['name'], pictureLocation: data['pictureLocation']);
+      Disease disease = Disease(name: data['name'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId']);
       diseases.add(disease);
     }
     return diseases;
@@ -72,7 +103,7 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("institutions").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Institution institution = Institution(name: data['name'], adress: data['adress'], longDescription: data['longDescription'], shortDescription: data['shortDescription'], workingTimes: data['workingTimes'], pictureLocation: data['pictureLocation']);
+      Institution institution = Institution(name: data['name'], adress: data['adress'], longDescription: data['longDescription'], shortDescription: data['shortDescription'], workingTimes: data['workingTimes'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId']);
       institutions.add(institution);
     }
     return institutions;
@@ -80,18 +111,56 @@ class FirebaseApi {
 
   static Future<List<News>> getNews() async {
     List<News> news = [];
-    QuerySnapshot querySnapshot = await _dataBase.collection("news").get();
+    QuerySnapshot querySnapshot = await _dataBase.collection("news").orderBy('date', descending: true).get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      print(data);
-      News novost = News(name: data['name'], type: data['type'],);
+      Timestamp t = data['date'];
+      DateTime date = t.toDate();
+      News novost = News(name: data['name'], type: data['type'], pictureLocation: data['pictureLocation'], date: date, uniqueId: data['uniqueId']);
       news.add(novost);
     }
+
     print(news.length);
     return news;
   }
 
 
+  static Future<List<Question>> getQuestions(String testId) async {
+    List<Question> questions = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("tests").doc(testId).collection("questions").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Question question = Question(name: data['name'], points: data['points'], questionId: data['questionId'], order: data['order']);
+      List<Answer> answers = await getAnswers(data['questionId'], testId);
+      question.answers = answers;
+
+      questions.add(question);
+    }
+    print(questions.length);
+    return questions;
+  }
+
+  static Future<List<Answer>> getAnswers(String questionId, String testId) async {
+    List<Answer> answers = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("tests").doc(testId).collection("questions").doc(questionId).collection("answers").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Answer answer = Answer(name: data['name'], uniqueId: data['uniqueId']);
+      answers.add(answer);
+    }
+    return answers;
+  }
+
+  static Future<List<PostedMaterial>> getPostedMaterials() async {
+    List<PostedMaterial> postedMaterials = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("materials").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      PostedMaterial postedMaterial = PostedMaterial(name: data['name'], type: data['type'], link: data['link'],);
+      postedMaterials.add(postedMaterial);
+    }
+    return postedMaterials;
+  }
 
   static Future<void> addUser({
     required String userEmail,

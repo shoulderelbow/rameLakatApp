@@ -26,5 +26,18 @@
   "Contact" : "Kontakt: ",
   "Description of a hospital" : "Opis bolnice",
   "How to treat it" : "Kako je leciti?",
-  "Symposiums" : "Simpozijumi"
+  "Symposiums" : "Simpozijumi",
+  "Survey" : "Anketa",
+  "Next" : "Sledece pitanje",
+  "Podcast" : "Potkasti",
+  "PodcastAndMaterial" : "Potkasti i materijali",
+  "Material" : "Materijali",
+  "News" : "Vesti udruzenja",
+  "Available doctors" : "Dostupni doktori",
+  "Error" : "Greska",
+  "emptyEmail" : "Email ne moze biti prazan",
+  "Back" : "Nazad",
+  "emptyPassword" : "Lozinka ne moze biti prazna",
+  "emailFormatIncorrect" : "Pogresan format email-a",
+  "emailOrPasswordIncorrect" : "Pogresan email ili lozinka"
 }

@@ -30,4 +30,12 @@ class SharedPrefs {
     String email = _instance?.getString('email') ?? '';
     return User(firstName: firstname, lastName: lastName, email: email);
   }
+
+
+  void removeUser() async {
+    await _instance?.setString('firstName', "");
+    await _instance?.setString('lastName', "");
+    await _instance?.setString('email', "");
+  }
+
 }
