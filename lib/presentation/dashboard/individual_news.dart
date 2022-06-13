@@ -43,15 +43,11 @@ class _IndividualNewsState extends State<IndividualNews> {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
                 return Container(
-                  height: MediaQuery.of(context).size.height,
                   child: Center(
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                );
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                        value: 50,
+                      )));
               case ConnectionState.done:
                 return IndividualNewsWidget(news: news);
               default:

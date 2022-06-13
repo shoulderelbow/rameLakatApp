@@ -79,9 +79,9 @@ class _SurveyQuizWidgetState extends State<SurveyQuizWidget> {
                     padding: EdgeInsets.all(15),
                     child: Container(
                       decoration: BoxDecoration(
-                        boxShadow: [BoxShadow(blurRadius: 4, color: Color(0xFF75C4CB), spreadRadius: 1)],
+                        boxShadow: [BoxShadow(blurRadius: 4, color: Colors.black54, spreadRadius: 1)],
                         borderRadius: BorderRadius.circular(10),
-                        color: widget.questions[index].answers[index1].isSelected == true ? Colors.greenAccent : Colors.white,
+                        color: widget.questions[index].answers[index1].isSelected == true ? Color(0xFFC1E9B2): Colors.white,
                       ),
                       height: 70,
                       width: 60,
@@ -110,8 +110,8 @@ class _SurveyQuizWidgetState extends State<SurveyQuizWidget> {
               child: GestureDetector(
                 child: Container(
                   decoration: BoxDecoration(
-                    boxShadow: [BoxShadow(blurRadius: 4, color: Color(0xFF75C4CB), spreadRadius: 2)],
-                    color: isEnabled ? Color(0xFFB1E7EC) : Color(0xFF9B9797),
+                    // boxShadow: [BoxShadow(blurRadius: 4, color: Colors.black54, spreadRadius: 2)],
+                    color: isEnabled ? Color(0xFFc5d4ed) : Color(0xFF9B9797),
                   ),
                   width: 500,
                   height: 70,

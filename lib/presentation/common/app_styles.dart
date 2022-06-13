@@ -16,7 +16,7 @@ boldText(
 
 userText(
     {double fontSize = 15,
-          Color color = Colors.black54,
+          Color color = Colors.black,
           FontWeight fontWeight = FontWeight.w700}) =>
     TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight);
 

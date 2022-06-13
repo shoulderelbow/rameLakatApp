@@ -23,6 +23,78 @@ class _DiseasesWidgetState extends State<DiseasesWidget> {
       children: [
         _titleHeader(),
         SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    final parameter = Parameter(id: "CR5prXsNl8tyrDohozXg");
+                    Navigator.of(context).pushNamed(
+                      "/individual_disease",
+                      arguments: parameter,
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white, borderRadius: BorderRadius.circular(10.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          spreadRadius: 3,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    width: 150,
+                    height: 60,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text ("UPOZNAJ SVOJE RAME", style: TextStyle (fontSize: 17, fontWeight: FontWeight.bold),maxLines: 3, textAlign: TextAlign.center,),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 10,),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    final parameter = Parameter(id: "SVfcTdZ2eajCOaasgtCI");
+                    Navigator.of(context).pushNamed(
+                      "/individual_disease",
+                      arguments: parameter,
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white, borderRadius: BorderRadius.circular(10.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          spreadRadius: 3,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    width: 150,
+                    height: 60,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text ("UZROCI BOLA U RAMENU",style: TextStyle (fontSize: 17, fontWeight: FontWeight.bold),maxLines: 3, textAlign: TextAlign.center),
+                    ),
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+        ),
+        Divider(indent: 15,endIndent: 15,thickness: 2,),
         Card(
           margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           elevation: 5,
@@ -51,7 +123,7 @@ class _DiseasesWidgetState extends State<DiseasesWidget> {
               onChanged: (String searchedText) {
                 filterDiseases = [];
                 for (int i = 0; i < diseases.length; i++) {
-                  if (diseases[i].name?.contains(searchedText) ?? false) {
+                  if ((diseases[i].name?.toLowerCase().contains(searchedText.toLowerCase()) ?? false) && diseases[i].uniqueId != "SVfcTdZ2eajCOaasgtCI" && diseases[i].uniqueId != "CR5prXsNl8tyrDohozXg") {
                     filterDiseases.add(diseases[i]);
                   }
                 }
@@ -60,7 +132,7 @@ class _DiseasesWidgetState extends State<DiseasesWidget> {
             ),
           ),
         ),
-        _allDiseasesContainer(),
+        filterDiseases.length == 0 ? Text("Nema rezultata pretrage", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.black26)) : _allDiseasesContainer(),
       ],
     );
   }
@@ -70,7 +142,7 @@ Widget _titleHeader() => Container(
   height: 25.0,
   alignment: Alignment.centerLeft,
   child: Text(
-    'Diseases'.tr(),
+    'pat_conditions'.tr(),
     style: TextStyle(
       fontSize: 25,
       fontWeight: FontWeight.w700,
@@ -99,7 +171,7 @@ Widget _allDiseasesContainer() => Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   width: 80,
@@ -124,27 +196,9 @@ Widget _allDiseasesContainer() => Expanded(
                         children: [
                           Text(
                             filterDiseases[index].name ?? "",
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            "Type of disease",
-                            style: TextStyle(color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w300, fontSize: 14),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            "How serious it is/short description",
-                            style: TextStyle(color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w300, fontSize: 14),
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 17),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(
-                            height: 5,
                           ),
                         ],
                       ),
@@ -159,4 +213,6 @@ Widget _allDiseasesContainer() => Expanded(
     },
   ),
 );
+
+
 

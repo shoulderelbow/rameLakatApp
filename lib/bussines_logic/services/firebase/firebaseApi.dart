@@ -12,6 +12,7 @@ import '../../../data/models/News.dart';
 import '../../../data/models/Podcast.dart';
 import '../../../data/models/Question.dart';
 import '../../../data/models/Survey.dart';
+import '../../../data/models/User.dart';
 
 final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
 
@@ -23,22 +24,55 @@ class FirebaseApi {
   static Future<Institution> getInstitution(String id) async {
     var institutiondata = await _dataBase.collection("institutions").doc(id).get();
 
-    Institution institution = Institution(name: institutiondata['name'], pictureLocation: institutiondata['pictureLocation'], adress: institutiondata['adress'], workingTimes: institutiondata['workingTimes'], phone: institutiondata['phone']);
+    Institution institution = Institution(name: institutiondata['name'], pictureLocation: institutiondata['pictureLocation'], adress: institutiondata['adress'], workingTimes: institutiondata['workingTimes'], phone: institutiondata['phone'], longDescription: institutiondata['longDescription'], shortDescription: institutiondata['shortDescription']);
     return institution;
+  }
+
+  static Future<Simposium> getSymposium(String id) async {
+    print("************************");
+    var symposiumData = await _dataBase.collection('simposiums').doc(id).get();
+    print(symposiumData);
+    print("Aaaasdasdasdasdasdasdasdas");
+    Timestamp timestamp = symposiumData['date'];
+    DateTime date = timestamp.toDate();
+    print(date);
+    Simposium simposium = Simposium(name: symposiumData['name'], pictureLocation: symposiumData['pictureLocation'], subject: symposiumData['subject'], date: date, uniqueId: symposiumData['uniqueId'], symposiumText: symposiumData['symposiumText']);
+    return simposium;
   }
 
   static Future<Disease> getDisease(String id) async {
     var diseasesdata = await _dataBase.collection("diseases").doc(id).get();
-    Disease disease = Disease(name: diseasesdata['name'], uniqueId: diseasesdata['uniqueId']);
+    Disease disease = Disease(name: diseasesdata['name'], uniqueId: diseasesdata['uniqueId'], pictureLocation: diseasesdata['pictureLocation'], diseaseDescription: diseasesdata['diseaseDescription']);
     return disease;
+  }
+
+  static Future<User> getUser(String id) async {
+    var userDataa = await _dataBase.collection("users").doc(id).get();
+    var userData = userDataa.data();
+    print("**************");
+    print(userData);
+    print("**************");
+    User user = User(firstName: userData!['userFirstName'], lastName: userData['userLastName'], userName: userData['userName'], email: userData['userEmail'], uniqueId: userData['uniqueId'], city: userData['city'], profileImage: userData['profileImage']);
+    return user;
   }
 
   static Future<News> getNew(String id) async {
     var vesti = await _dataBase.collection("news").doc(id).get();
     Timestamp timestamp = vesti['date'];
     DateTime date = timestamp.toDate();
-    News news = News(name: vesti['name'], pictureLocation: vesti['pictureLocation'], type: vesti['type'], uniqueId: vesti['uniqueId'], date: date);
+    News news = News(name: vesti['name'], pictureLocation: vesti['pictureLocation'], type: vesti['type'], uniqueId: vesti['uniqueId'], date: date, newsText: vesti['newsText']);
     return news;
+  }
+
+  static Future<List<User>> getUsers() async {
+    List<User> users = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("users").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      User user = User(uniqueId: data['uniqueId'], firstName: data['userFistName'], lastName: data['userLastName'], email: data['userEmail'], userName: data['userName'], city: data['city'], profileImage: data['profileImage']);
+      users.add(user);
+    }
+    return users;
   }
   
   static Future<List<Podcast>> getPodcasts() async {
@@ -68,9 +102,11 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("simposiums").orderBy('date', descending: true).get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
+      print("#OJJIOJIOJOIJOJ");
+      print(data);
       Timestamp timestamp = data['date'];
       DateTime date = timestamp.toDate();
-      Simposium simposium = Simposium(name: data['name'], date: date, uniqueId: data['uniqueId'], subject: data['subject'], pictureLocation: data['pictureLocation']);
+      Simposium simposium = Simposium(name: data['name'], date: date, uniqueId: data['uniqueId'], subject: data['subject'], pictureLocation: data['pictureLocation'], symposiumText: data['symposiumText']);
       simposiums.add(simposium);
     }
     return simposiums;
@@ -92,7 +128,7 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("diseases").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Disease disease = Disease(name: data['name'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId']);
+      Disease disease = Disease(name: data['name'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId'], diseaseDescription: data['diseaseDescription']);
       diseases.add(disease);
     }
     return diseases;
@@ -116,7 +152,7 @@ class FirebaseApi {
       var data = querySnapshot.docs[i].data() as Map;
       Timestamp t = data['date'];
       DateTime date = t.toDate();
-      News novost = News(name: data['name'], type: data['type'], pictureLocation: data['pictureLocation'], date: date, uniqueId: data['uniqueId']);
+      News novost = News(name: data['name'], type: data['type'], pictureLocation: data['pictureLocation'], date: date, uniqueId: data['uniqueId'], newsText: data['newsText']);
       news.add(novost);
     }
 
@@ -161,6 +197,21 @@ class FirebaseApi {
     }
     return postedMaterials;
   }
+  static Future<void> uploadImage({
+    required String profileImage,
+    required String uniqueId,
+  }) async {
+    DocumentReference usersDocument = _dataBase.collection('users').doc(uniqueId);
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "profileImage": profileImage,
+    };
+
+    await usersDocument
+        .update(data)
+        .whenComplete(() => print("Notes item added to the database"))
+        .catchError((e) => print(e));
+  }
 
   static Future<void> addUser({
     required String userEmail,
@@ -168,6 +219,7 @@ class FirebaseApi {
     required String userPassword,
     required String userFirstName,
     required String userLastName,
+    required String userName,
     required String? userId,
   }) async {
     DocumentReference usersDocument =
@@ -179,11 +231,11 @@ class FirebaseApi {
       "userPassword": userPassword,
       "userFirstName" : userFirstName,
       "userLastName" : userLastName,
+      "userName" : userName,
     };
 
 
-
-    await usersDocument
+        await usersDocument
         .set(data)
         .whenComplete(() => print("Notes item added to the database"))
         .catchError((e) => print(e));

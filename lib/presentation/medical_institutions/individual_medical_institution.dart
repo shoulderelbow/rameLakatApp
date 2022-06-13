@@ -48,15 +48,13 @@ class _IndividualMedicalInstitutionState extends State<IndividualMedicalInstitut
                     children: [
                       Row(
                         children: [
-                          Expanded(
-                            child: Container(
-                              child: Image.network(institution?.pictureLocation ?? ''),
-                              height: 150,
-                              width: 150,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                                vertical: 5,
-                              ),
+                          Container(
+                            child: Image.network(institution?.pictureLocation ?? ''),
+                            height: 150,
+                            width: 150,
+                            margin:  EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
                             ),
                           ),
                           Expanded(
@@ -68,16 +66,18 @@ class _IndividualMedicalInstitutionState extends State<IndividualMedicalInstitut
                                 children: [
                                   Text(
                                     institution?.name ?? '',
-                                    style: TextStyle(fontSize: 25,fontFamily: 'ChakraPetch', fontWeight: FontWeight.bold),
+                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                                   ),
                                   Row(
                                     children: [
                                       Icon(Icons.location_on),
                                       Padding(
-                                        padding: EdgeInsets.only(left: 4.0),
+                                        padding: EdgeInsets.only(left: 2.0, right: 2),
                                         child: Text(
                                           '${institution?.adress}',
-                                          style: TextStyle(fontSize: 15, fontFamily: 'ChakraPetch', fontWeight: FontWeight.w700, fontStyle: FontStyle.italic ),
+                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],
@@ -89,7 +89,7 @@ class _IndividualMedicalInstitutionState extends State<IndividualMedicalInstitut
                                         padding: EdgeInsets.only(left: 4.0),
                                         child: Text(
                                           "${institution?.workingTimes}",
-                                          style: TextStyle(fontSize: 15,fontFamily: 'ChakraPetch', fontWeight: FontWeight.w700, fontStyle: FontStyle.italic ),
+                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                                         ),
                                       ),
                                     ],
@@ -101,7 +101,7 @@ class _IndividualMedicalInstitutionState extends State<IndividualMedicalInstitut
                                         padding: EdgeInsets.only(left: 4.0),
                                         child: Text(
                                           "${institution?.phone}",
-                                          style: TextStyle(fontSize: 15, fontFamily: 'ChakraPetch', fontWeight: FontWeight.w700, fontStyle: FontStyle.italic ),
+                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                                         ),
                                       ),
                                     ],
@@ -122,8 +122,7 @@ class _IndividualMedicalInstitutionState extends State<IndividualMedicalInstitut
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Description of the hospital - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with ",
+                            child: Text( "${institution?.longDescription}",
                             style: TextStyle(fontSize: 15),),
                           ),
                           Divider(color: AppColors.primaryDark, indent: 15, endIndent: 15, thickness: 1),
@@ -135,7 +134,7 @@ class _IndividualMedicalInstitutionState extends State<IndividualMedicalInstitut
                             children: [
                             Align(alignment: Alignment.centerLeft),
                                 Container(
-                                  height: 500,
+                                  height: 300,
                                   child:
                                     _availableDoctorsContainer(),
                                 ),
@@ -202,7 +201,7 @@ Widget _availableDoctorsContainer() => ListView.builder(
                         height: 5,
                       ),
                       Text(
-                        doctors[index].phone ?? '',
+                        doctors[index].fieldOfExpertise ?? '',
                         style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w800, fontSize: 14),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
@@ -211,7 +210,7 @@ Widget _availableDoctorsContainer() => ListView.builder(
                         height: 5,
                       ),
                       Text(
-                        doctors[index].fieldOfExpertise ?? '',
+                        doctors[index].phone ?? '',
                         style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w800, fontSize: 14),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,

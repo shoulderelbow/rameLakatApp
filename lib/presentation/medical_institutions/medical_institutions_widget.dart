@@ -52,7 +52,7 @@ class _MedicalInstitutionsWidgetState extends State<MedicalInstitutionsWidget> {
                 onChanged: (String searchedText) {
                   filterInstitutions = [];
                   for (int i = 0; i < institutions.length; i++) {
-                    if (institutions[i].name?.contains(searchedText) ?? false) {
+                    if (institutions[i].name?.toLowerCase().contains(searchedText.toLowerCase()) ?? false) {
                       filterInstitutions.add(institutions[i]);
                     }
                   }
@@ -61,10 +61,11 @@ class _MedicalInstitutionsWidgetState extends State<MedicalInstitutionsWidget> {
               ),
             ),
           ),
+          filterInstitutions.length == 0 ? Text("Nema rezultata pretrage", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.black26)) :
           Container(
               width: 400,
               height: 470,
-              child: _allDiseasesContainer()),
+              child: _allInstitutionsContainer()),
         ],
       ),
     );
@@ -83,7 +84,7 @@ Widget _titleHeader() => Container(
   ),
 );
 
-Widget _allDiseasesContainer() => ListView.builder(
+Widget _allInstitutionsContainer() => ListView.builder(
   scrollDirection: Axis.horizontal,
   shrinkWrap: true,
   itemCount: filterInstitutions.length,
@@ -92,22 +93,24 @@ Widget _allDiseasesContainer() => ListView.builder(
       radius: 0,
       onTap: () {
         final parameter = Parameter(id: institutions[index].uniqueId ?? '');
-        Navigator.of(context).pushNamed(
-          "/individual_institution",
-          arguments: parameter,
-        );
+        // Navigator.of(context).pushNamed(
+        //   "/individual_institution",
+        //   arguments: parameter,
+        // );
       },
       child: Container(
+        width: 280,
+        height: 280,
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                width: 300,
-                height: 350,
+                width: 250,
+                height: 280,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.black,
@@ -121,23 +124,31 @@ Widget _allDiseasesContainer() => ListView.builder(
                 padding: EdgeInsets.only(left: 5, top: 10),
                 child: Column(
                   children: [
-                    Text(
-                      filterInstitutions[index].name ?? " ",
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 25),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.0, left: 8, right: 8),
+                      child: Text(
+                        filterInstitutions[index].name ?? " ",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     SizedBox(
-                      height: 5,
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 8.0, left: 8, right: 8),
+                      child: Text(
+                        filterInstitutions[index].adress ?? ' ',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w300, fontSize: 14),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     Text(
-                      filterInstitutions[index].adress ?? ' ',
-                      style: TextStyle(color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w300, fontSize: 14),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      filterInstitutions[index].longDescription ?? " ",
+                      filterInstitutions[index].shortDescription ?? " ",
                       style: TextStyle(color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w300, fontSize: 14),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,

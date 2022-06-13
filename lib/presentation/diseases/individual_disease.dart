@@ -1,12 +1,11 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:rame_lakat_app/bussines_logic/services/firebase/firebaseApi.dart';
 import 'package:rame_lakat_app/data/models/parameter.dart';
 import '../../data/models/Disease.dart';
 import '../../data/models/Survey.dart';
 import '../common/app_colors.dart';
 import '../common/common_views.dart';
-
 
 class IndividualDiseaseScreen extends StatefulWidget {
   const IndividualDiseaseScreen({Key? key, required this.parameter}) : super(key: key);
@@ -24,7 +23,6 @@ class _IndividualDiseaseScreenState extends State<IndividualDiseaseScreen> {
     survey = await FirebaseApi.getSurveys();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,79 +33,73 @@ class _IndividualDiseaseScreenState extends State<IndividualDiseaseScreen> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              return Center(child: CircularProgressIndicator(color: Colors.black, value: 50, ));
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Colors.black,
+                value: 50,
+              ));
             case ConnectionState.done:
               return SafeArea(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            child: Image.network("https://static.toiimg.com/photo/msid-75449076/75449076.jpg?203156"),
-                            height: 150,
-                            width: 150,
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 5,
-                            ),
-                          ),
-                          Container(
-                              child: Text(
-                                  disease.name ?? '',
-                                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
-                        ],
-                      ),
-                      Divider(color: AppColors.primaryDark, indent: 15, endIndent: 15, thickness: 1),
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Description of the disease - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever",
+                        child: Image.network(disease.pictureLocation ?? ''),
+                        height: 180,
+                        width: 300,
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 5,
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "How to treat it".tr(),
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                            "Description of how to treat it - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap"),
-                      ),
-                      SizedBox(height: 50,),
                       Padding(
-                        padding: EdgeInsets.only(top: 80, left: 200),
-                        child: Stack(
-                          children: [
-                            Container(
-                            width: 160,
-                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: [BoxShadow(blurRadius: 0, color: Colors.white, spreadRadius: 0)]),
-                            child: TextButton(
-                              onPressed: (){
-                              final parameter = Parameter(id: disease.uniqueId ?? "");
-                              Navigator.of(context).pushNamed("/individual_surveys", arguments: parameter);
-                            }, child:
-                            Padding(
-                              padding: EdgeInsets.only(left: 20),
-                              child: Row(
-                                children: [
-                                  Text("URADI TEST", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 15)),
-                                  SizedBox(width: 10,),
-                                  Icon(Icons.arrow_forward, color: Colors.black),
-                                ],
-                              ),
-                            ),
-                            ),
-                          ),
-                          ],
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Container(child: Text(disease.name ?? '', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2)),
                       ),
+                      Divider(color: AppColors.primaryDark, indent: 25, endIndent: 25, thickness: 1),
+                      Html(
+                        data: """${disease.diseaseDescription}""",
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        alignment: Alignment.centerLeft,
+                        child: Text(""),
+                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.only(top: 50, left: 200, right: 5),
+                      //   child: Stack(
+                      //     children: [
+                      //       Visibility(
+                      //         child: Container(
+                      //           width: 160,
+                      //           decoration: BoxDecoration(
+                      //               color: Colors.white,
+                      //               borderRadius: BorderRadius.circular(10),
+                      //               boxShadow: [BoxShadow(blurRadius: 0, color: Colors.white, spreadRadius: 0)]),
+                                // child: TextButton(
+                                //   onPressed: () {
+                                //     final parameter = Parameter(id: disease.uniqueId ?? "");
+                                //     Navigator.of(context).pushNamed("/individual_surveys", arguments: parameter);
+                                //   },
+                              //     child: Padding(
+                              //       padding: EdgeInsets.only(left: 20),
+                              //       child: Row(
+                              //         children: [
+                              //           Text("URADI TEST", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 15)),
+                              //           SizedBox(
+                              //             width: 10,
+                              //           ),
+                              //           Icon(Icons.arrow_forward, color: Colors.black),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
+                              // visible: (widget.parameter.id == "CR5prXsNl8tyrDohozXg" ||  widget.parameter.id == "SVfcTdZ2eajCOaasgtCI") ? false : true
+                            // ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

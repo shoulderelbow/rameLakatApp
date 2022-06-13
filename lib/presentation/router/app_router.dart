@@ -14,6 +14,7 @@ import 'package:rame_lakat_app/presentation/survey/individual_surveys.dart';
 import 'package:rame_lakat_app/presentation/survey/survey_results.dart';
 import '../dashboard/my_profile.dart';
 import '../podcasts_and_materials/all_podcasts_and_mateirals.dart';
+import '../simposiums/individual_symposiums.dart';
 
 class AppRouter {
   Route? onGenerateRoute(RouteSettings routeSettings) {
@@ -44,6 +45,24 @@ class AppRouter {
             );
           }
         }
+      case '/individual_symposiums':
+        {
+          if (routeSettings.arguments is Parameter) {
+            Parameter par = routeSettings.arguments as Parameter;
+            return MaterialPageRoute(
+              builder: (_) => IndividualSymposiumsScreen(
+                parameter: par,
+              ),
+            );
+          }
+          else{
+            return MaterialPageRoute(
+              builder: (_) => IndividualSymposiumsScreen(
+                parameter: Parameter(id: ''),
+              ),
+            );
+          }
+        }
       case '/individual_institution':
         {
           if (routeSettings.arguments is Parameter) {
@@ -66,7 +85,22 @@ class AppRouter {
       case '/registration':
         return MaterialPageRoute(builder: (_) => RegistrationScreen());
       case '/my_profile':
-        return MaterialPageRoute(builder: (_) => MyProfile());
+        {
+          if (routeSettings.arguments is Parameter) {
+            Parameter par = routeSettings.arguments as Parameter;
+            return MaterialPageRoute(builder: (_) =>
+                MyProfile(
+                  parameter: par,
+                ),
+            );
+          } else {
+            return MaterialPageRoute(
+              builder: (_) => MyProfile(
+                parameter: Parameter(id: ''),
+              ),
+            );
+          }
+        }
       case '/simposiums':
         return MaterialPageRoute(builder: (_) => AllSimposiumsScreen());
       case '/individual_surveys':

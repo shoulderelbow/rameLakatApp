@@ -4,5 +4,6 @@ class News{
   final String? pictureLocation;
   final DateTime? date;
   final String? uniqueId;
-  News({this.name, this.type, this.pictureLocation, this.date, this.uniqueId});
+  final String? newsText;
+  News({this.name, this.type, this.pictureLocation, this.date, this.uniqueId, this.newsText});
 }

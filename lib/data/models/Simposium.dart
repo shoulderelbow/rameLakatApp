@@ -4,5 +4,6 @@ class Simposium{
   final String? pictureLocation;
   final DateTime? date;
   final String? subject;
-  Simposium({this.name, this.uniqueId, this.pictureLocation, this.date, this.subject});
+  final String? symposiumText;
+  Simposium({this.name, this.uniqueId, this.pictureLocation, this.date, this.subject, this.symposiumText});
 }

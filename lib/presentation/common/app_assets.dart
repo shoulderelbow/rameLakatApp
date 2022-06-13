@@ -42,8 +42,8 @@ class AppAssets {
     'images/MedicalRecordsIcon.png',
   );
 
-  static final Widget diseases = Image.asset(
-    'images/diseases.png',
+  static final Widget injury = Image.asset(
+    'images/injury_icon.png',
   );
 
   static final Widget medicalInstitutions = Image.asset(

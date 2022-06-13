@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:rame_lakat_app/bussines_logic/services/common/shared_prefs.dart';
 import 'package:rame_lakat_app/presentation/router/app_router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -8,7 +10,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await EasyLocalization.ensureInitialized();
+  await GetStorage.init();
   SharedPrefs().init();
+
+  if(GetStorage().read("language") == null) {
+    GetStorage().write("language", "sr");
+  }
+
   runApp(EasyLocalization(
       startLocale: Locale('sr'),
       supportedLocales: [Locale('sr'), Locale('en')],

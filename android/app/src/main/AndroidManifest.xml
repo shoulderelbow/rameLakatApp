@@ -30,7 +30,7 @@
 
 
    <application
-        android:label="rame_lakat_app"
+        android:label="Rame-Lakat app"
         android:usesCleartextTraffic="True"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

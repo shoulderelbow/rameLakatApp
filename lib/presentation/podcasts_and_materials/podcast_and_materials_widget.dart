@@ -54,12 +54,12 @@ class _PodcastWidgetState extends State<PodcastWidget> {
                     filterPodcasts = [];
                     filterPostedMaterials = [];
                     for (int i = 0; i < podcasts.length; i++) {
-                      if (podcasts[i].name?.contains(searchedText) ?? false) {
+                      if (podcasts[i].name?.toLowerCase().contains(searchedText.toLowerCase()) ?? false) {
                         filterPodcasts.add(podcasts[i]);
                       }
                     }
                     for (int i=0; i<postedMaterials.length; i++) {
-                      if (postedMaterials[i].name?.contains(searchedText) ?? false) {
+                      if (postedMaterials[i].name?.toLowerCase().contains(searchedText.toLowerCase()) ?? false) {
                         filterPostedMaterials.add(postedMaterials[i]);
                       }
                     }
@@ -72,29 +72,29 @@ class _PodcastWidgetState extends State<PodcastWidget> {
               height: 20,
             ),
             Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 20),
+                padding: EdgeInsets.only(left: 20.0, right: 20, bottom: 20),
                 child: TabBar(
                   tabs: [
                     Tab(
                         child: Text(
                       "Podcast".tr(),
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 20, color: Colors.black),
                     )),
                     Tab(
                       child: (Text(
                         "Material".tr(),
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 20, color: Colors.black),
                       )),
                     ),
                   ],
                 )),
             Container(
-              height: 300,
-              width: 300,
+              height: 500,
+              width: 500,
               child: TabBarView(
                 children: [
-                  _allPodcastContainer(),
-                  _allMaterialsContainer(),
+                  filterPodcasts.length == 0 ? Text("Nema rezultata pretrage", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.black26)) :_allPodcastContainer(),
+                  filterPostedMaterials.length == 0 ? Text("Nema rezultata pretrage", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.black26)) :_allMaterialsContainer(),
                 ],
               ),
             ),
@@ -138,18 +138,16 @@ Widget _allPodcastContainer() => ListView.builder(
                       child: AppAssets.podcastIconPng,
                     ),
                     SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text(
-                          filterPodcasts[index].name ?? "",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                    Expanded(
+                      child: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            filterPodcasts[index].name ?? "",
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ),
@@ -157,7 +155,7 @@ Widget _allPodcastContainer() => ListView.builder(
                 ),
                 SizedBox(height: 5),
                 GestureDetector(
-                  child: Text(filterPodcasts[index].link ?? '', style: TextStyle(fontWeight: FontWeight.w700, color: Colors.blue)),
+                  child: Text(filterPodcasts[index].link ?? '', style: TextStyle(fontWeight: FontWeight.w700, color: Colors.blueGrey)),
                   onTap: () async {
                     if (await canLaunchUrl(Uri.parse(filterPodcasts[index].link ?? ''))) {
                       await launchUrl(Uri.parse(
@@ -190,31 +188,28 @@ Widget _allMaterialsContainer() => ListView.builder(
               Row(
                 children: [
                   Container(
-                    width: 30,
-                    height: 30,
+                    width: 50,
+                    height: 50,
                     child: getIcon(index),
                   ),
                   SizedBox(width: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        filterPostedMaterials[index].name ?? "",
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  Expanded(
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          filterPostedMaterials[index].name ?? "",
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 5),
               GestureDetector(
-                child: Text(filterPostedMaterials[index].link ?? '', style: TextStyle(fontWeight: FontWeight.w700, color: Colors.blue)),
+                child: Text('playVideo'.tr(),maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end,style: TextStyle(fontWeight: FontWeight.w700, color: Colors.blueGrey, fontSize: 15)),
                 onTap: () async {
                   if (await canLaunchUrl(Uri.parse(filterPostedMaterials[index].link ?? ''))) {
                     await launchUrl(Uri.parse(

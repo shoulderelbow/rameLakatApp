@@ -25,12 +25,6 @@ class _AllSimposiumsState extends State<AllSimposiumsScreen> {
   }
 
   @override
-  void initState() {
-    getSimposiums();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backGroundColor,

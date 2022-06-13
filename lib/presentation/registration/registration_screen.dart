@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rame_lakat_app/bussines_logic/services/firebase/firebaseApi.dart';
@@ -5,6 +6,20 @@ import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
 import 'package:rame_lakat_app/presentation/common/common_views.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+
+import '../login/login_screen.dart';
+
+String globalFirstName = '';
+String globalLastName = '';
+String globalEmail = '';
+String globalPassword = '';
+String globalConfirmPassword = '';
+String globalUsername = '';
+String dateYear = "";
+String dateMonth = "";
+String dateDay = '';
+
 
 class RegistrationScreen extends StatefulWidget {
   RegistrationScreen({Key? key}) : super(key: key);
@@ -15,12 +30,6 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _auth = FirebaseAuth.instance;
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _confirmpasswordController = TextEditingController();
   final FirebaseApi fApi = FirebaseApi();
 
   @override
@@ -34,28 +43,39 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               child: Stack(
                 children: [
                   GestureDetector(
-                      child: Icon(Icons.arrow_back),
-                      onTap: (){Navigator.pop(context);
-                      },
+                    child: Icon(Icons.arrow_back),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                   ),
                   Align(alignment: Alignment.topLeft),
                   Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    _logo(),
-                    _title(),
-                    _welcomeText(),
-                    FirstNameInputField(firstNameController: _firstNameController),
-                    LastNameInputField(lastNameController: _lastNameController),
-                    UsernameInputField(usernameController: _usernameController),
-                    EmailInputField(emailController: _emailController),
-                    PasswordInputField(passwordController: _passwordController),
-                    ConfirmPasswordInputField(confirmpasswordController: _confirmpasswordController),
-                    _registerButton(),
-                  ],
-                ),
-              ],),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _logo(),
+                      _title(),
+                      _welcomeText(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(width: 50, child: FirstNameInputField()),
+                          ),
+                          Expanded(
+                            child: Container(width: 50, child: LastNameInputField()),
+                          ),
+                        ],
+                      ),
+                      UsernameInputField(),
+                      dateTimePicker(),
+                      EmailInputField(),
+                      PasswordInputField(),
+                      ConfirmPasswordInputField(),
+                      _registerButton(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ));
@@ -76,17 +96,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           text: const TextSpan(children: [
             TextSpan(
               text: AppStrings.appNamePart1,
-              style: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w600),
+              style: TextStyle(color: AppColors.primaryColor, fontSize: 25, fontWeight: FontWeight.w600),
             ),
             TextSpan(
               text: AppStrings.appNamePart2,
-              style: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w300),
+              style: TextStyle(color: AppColors.primaryColor, fontSize: 25, fontWeight: FontWeight.w300),
             ),
           ]),
         ));
@@ -96,17 +110,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Container(
         margin: const EdgeInsets.fromLTRB(0, 40, 0, 40),
         child: Column(
-          children: const [
-            Text("Enter email and password",
-                style: TextStyle(
-                    color: AppColors.darkTextColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
-            Text("To make an account",
-                style: TextStyle(
-                    color: AppColors.darkTextColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400))
+          children: [
+            Text(
+              "enterFields".tr(),
+              style: TextStyle(color: AppColors.darkTextColor, fontSize: 22, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              "makeAccount".tr(),
+              style: TextStyle(color: AppColors.darkTextColor, fontSize: 15, fontWeight: FontWeight.w400),
+            ),
           ],
         ));
   }
@@ -115,24 +127,158 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Container(
         width: MediaQuery.of(context).size.width,
         child: elevatedButton(
-            text: "Create account",
+            text: "Create account".tr(),
             color: AppColors.primaryColor,
             fontWeight: FontWeight.w500,
             onPress: () async {
-              try {
-                final data = await _auth.createUserWithEmailAndPassword(
-                    email: _emailController.text,
-                    password: _passwordController.text);
-                await FirebaseApi.addUser(
-                    userEmail: _emailController.text,
+              bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(globalEmail);
+              if (globalEmail == "") {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyEmail".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (globalPassword == "") {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyPassword".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (globalFirstName == "") {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyFirstName".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (globalLastName == "") {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyLastName".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (globalUsername == "") {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyUsername".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (globalConfirmPassword == "") {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emptyConfirmPassword".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (emailValid == false) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("emailFormatIncorrect".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (globalPassword != globalConfirmPassword) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'.tr()),
+                    content: Text("incorrectConfirmPassword".tr()),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Back".tr()),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                try {
+                  final data = await _auth.createUserWithEmailAndPassword(
+                    email: globalEmail,
+                    password: globalPassword,
+                  );
+                  await FirebaseApi.addUser(
+                    userEmail: globalEmail,
                     dateCreated: DateTime.now(),
-                    userPassword: _passwordController.text,
-                    userFirstName: _firstNameController.text,
-                    userLastName: _lastNameController.text,
-                    userId: data.user?.uid);
-                Navigator.of(context).pop();
-              } catch (e) {
-                print(e);
+                    userPassword: globalPassword,
+                    userFirstName: globalFirstName,
+                    userLastName: globalLastName,
+                    userName: globalUsername,
+                    userId: data.user?.uid,
+                  );
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  print(e);
+                }
               }
             }),
         margin: const EdgeInsets.symmetric(vertical: 20));
@@ -140,10 +286,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 }
 
 class FirstNameInputField extends StatelessWidget {
-  const FirstNameInputField({Key? key, required this.firstNameController})
-      : super(key: key);
-
-  final TextEditingController firstNameController;
+  const FirstNameInputField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -154,11 +297,13 @@ class FirstNameInputField extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 8),
         child: TextField(
+          onChanged: (firstName) {
+            globalFirstName = firstName;
+          },
           autofocus: false,
           keyboardType: TextInputType.text,
-          controller: firstNameController,
           style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -166,24 +311,84 @@ class FirstNameInputField extends StatelessWidget {
               enabledBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.only(
-                  left: 15, bottom: 16, top: 16, right: 15),
-              hintStyle: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black.withOpacity(0.2)),
-              hintText: "First name"),
+              contentPadding: const EdgeInsets.only(left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, color: Colors.black.withOpacity(0.2)),
+              hintText: "FirstName".tr()),
         ),
       ),
     );
   }
 }
 
-class LastNameInputField extends StatelessWidget {
-  const LastNameInputField({Key? key, required this.lastNameController})
-      : super(key: key);
+class dateTimePicker extends StatefulWidget {
+  const dateTimePicker({Key? key}) : super(key: key);
 
-  final TextEditingController lastNameController;
+  @override
+  State<dateTimePicker> createState() => _dateTimePickerState();
+}
+
+class _dateTimePickerState extends State<dateTimePicker> {
+
+  @override
+  Widget build(BuildContext context) {
+    return
+      Card(
+        elevation: 3,
+        shadowColor: AppColors.primaryColorOp01,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: GestureDetector(
+            child: Container(
+              height: 52,
+              width: 400,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: dateDay == "" ? Text("Date of birth".tr(), style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, color: Colors.black.withOpacity(0.2)),) : Text("${dateDay}.${dateMonth}.${dateYear}" , style: TextStyle(color: AppColors.primaryColor, fontSize: 18),),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: 6,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Icons.calendar_today_outlined, color: Colors.black.withOpacity(0.2)),
+                  ),
+                ],
+              ),
+            ),
+            onTap: (){
+                DatePicker.showDatePicker(context,
+                    showTitleActions: true,
+                    minTime: DateTime(1920, 1, 1),
+                    maxTime: DateTime(2022, 12, 31),
+                    theme: DatePickerTheme(
+                        headerColor: AppColors.darkTextColor,
+                        backgroundColor: AppColors.lightBlueColor,
+                        itemStyle: TextStyle(color: Colors.black, fontSize: 18),
+                        cancelStyle: TextStyle(color: Colors.white, fontSize: 18),
+                        doneStyle: TextStyle(color: Colors.white, fontSize: 16)), onChanged: (date) {
+                    }, onConfirm: (date) {
+                      dateYear = date.year.toString();
+                      dateMonth = date.month.toString();
+                      dateDay = date.day.toString();
+                      setState(() {
+
+                      });
+                    }, currentTime: DateTime.now(), locale: LocaleType.en);
+              },
+            ),
+          ));
+  }
+}
+
+class LastNameInputField extends StatelessWidget {
+  const LastNameInputField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -194,11 +399,12 @@ class LastNameInputField extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 8),
         child: TextField(
+          onChanged: (lastName) {
+            globalLastName = lastName;
+          },
           autofocus: false,
-          keyboardType: TextInputType.text,
-          controller: lastNameController,
           style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -206,13 +412,9 @@ class LastNameInputField extends StatelessWidget {
               enabledBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.only(
-                  left: 15, bottom: 16, top: 16, right: 15),
-              hintStyle: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black.withOpacity(0.2)),
-              hintText: "Last name"),
+              contentPadding: const EdgeInsets.only(left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, color: Colors.black.withOpacity(0.2)),
+              hintText: "LastName".tr()),
         ),
       ),
     );
@@ -220,10 +422,7 @@ class LastNameInputField extends StatelessWidget {
 }
 
 class EmailInputField extends StatelessWidget {
-  const EmailInputField({Key? key, required this.emailController})
-      : super(key: key);
-
-  final TextEditingController emailController;
+  const EmailInputField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -234,11 +433,12 @@ class EmailInputField extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 8),
         child: TextField(
+          onChanged: (email) {
+            globalEmail = email;
+          },
           autofocus: false,
-          keyboardType: TextInputType.text,
-          controller: emailController,
           style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -246,13 +446,9 @@ class EmailInputField extends StatelessWidget {
               enabledBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.only(
-                  left: 15, bottom: 16, top: 16, right: 15),
-              hintStyle: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black.withOpacity(0.2)),
-              hintText: "E-mail"),
+              contentPadding: const EdgeInsets.only(left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, color: Colors.black.withOpacity(0.2)),
+              hintText: "E-mail".tr()),
         ),
       ),
     );
@@ -260,10 +456,7 @@ class EmailInputField extends StatelessWidget {
 }
 
 class PasswordInputField extends StatelessWidget {
-  const PasswordInputField({Key? key, required this.passwordController})
-      : super(key: key);
-
-  final TextEditingController passwordController;
+  const PasswordInputField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -274,12 +467,13 @@ class PasswordInputField extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 8),
         child: TextField(
+          onChanged: (password) {
+            globalPassword = password;
+          },
           autofocus: false,
-          keyboardType: TextInputType.text,
           obscureText: true,
-          controller: passwordController,
           style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -287,13 +481,9 @@ class PasswordInputField extends StatelessWidget {
               enabledBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.only(
-                  left: 15, bottom: 16, top: 16, right: 15),
-              hintStyle: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black.withOpacity(0.2)),
-              hintText: "Password"),
+              contentPadding: const EdgeInsets.only(left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, color: Colors.black.withOpacity(0.2)),
+              hintText: "Password".tr()),
         ),
       ),
     );
@@ -301,10 +491,7 @@ class PasswordInputField extends StatelessWidget {
 }
 
 class ConfirmPasswordInputField extends StatelessWidget {
-  const ConfirmPasswordInputField({Key? key, required this.confirmpasswordController})
-      : super(key: key);
-
-  final TextEditingController confirmpasswordController;
+  const ConfirmPasswordInputField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -315,12 +502,13 @@ class ConfirmPasswordInputField extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 8),
         child: TextField(
+          onChanged: (confirmPassword) {
+            globalConfirmPassword = confirmPassword;
+          },
           autofocus: false,
-          keyboardType: TextInputType.text,
           obscureText: true,
-          controller: confirmpasswordController,
           style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -328,13 +516,9 @@ class ConfirmPasswordInputField extends StatelessWidget {
               enabledBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.only(
-                  left: 15, bottom: 16, top: 16, right: 15),
-              hintStyle: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black.withOpacity(0.2)),
-              hintText: "Confirm password"),
+              contentPadding: const EdgeInsets.only(left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, color: Colors.black.withOpacity(0.2)),
+              hintText: "ConfirmPassword".tr()),
         ),
       ),
     );
@@ -342,10 +526,7 @@ class ConfirmPasswordInputField extends StatelessWidget {
 }
 
 class UsernameInputField extends StatelessWidget {
-  const UsernameInputField({Key? key, required this.usernameController})
-      : super(key: key);
-
-  final TextEditingController usernameController;
+  const UsernameInputField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -356,12 +537,12 @@ class UsernameInputField extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 8),
         child: TextField(
+          onChanged: (username) {
+            globalUsername = username;
+          },
           autofocus: false,
-          keyboardType: TextInputType.text,
-          obscureText: true,
-          controller: usernameController,
           style: const TextStyle(color: AppColors.primaryColor, fontSize: 18),
           decoration: InputDecoration(
               border: InputBorder.none,
@@ -369,13 +550,9 @@ class UsernameInputField extends StatelessWidget {
               enabledBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.only(
-                  left: 15, bottom: 16, top: 16, right: 15),
-              hintStyle: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black.withOpacity(0.2)),
-              hintText: "Username"),
+              contentPadding: const EdgeInsets.only(left: 15, bottom: 16, top: 16, right: 15),
+              hintStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, color: Colors.black.withOpacity(0.2)),
+              hintText: "Username".tr()),
         ),
       ),
     );

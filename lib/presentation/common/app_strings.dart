@@ -16,8 +16,8 @@ class AppStrings {
   static const termsAndConditionPart1 = "By signing in, you accept our";
   static const termsAndConditionPart2 = " Terms and Conditions";
   static const login = "Login";
-  static const email = "email";
-  static const password = "password";
+  static const email = "E-mail";
+  static const password = "Password";
 
 // Login With Mobile
   static const continueText = "Continue";

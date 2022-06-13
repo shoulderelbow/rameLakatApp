@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../data/models/parameter.dart';
 import '../common/app_colors.dart';
 import '../common/app_strings.dart';
 import 'all_simposiums.dart';
@@ -51,7 +52,7 @@ class _SymposiumWidgetState extends State<SymposiumWidget> {
                 onChanged: (String searchedText) {
                   filterSimposiums = [];
                   for (int i = 0; i < simposiums.length; i++) {
-                    if (simposiums[i].name?.contains(searchedText) ?? false) {
+                    if (simposiums[i].name?.toLowerCase().contains(searchedText.toLowerCase()) ?? false) {
                       filterSimposiums.add(simposiums[i]);
                     }
                   }
@@ -60,6 +61,7 @@ class _SymposiumWidgetState extends State<SymposiumWidget> {
               ),
             ),
           ),
+          filterSimposiums.length == 0 ? Text("Nema rezultata pretrage", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.black26)) :
           Container(
               height: 500,
               child: _allSimposiumsContainer()),
@@ -87,9 +89,9 @@ Widget _allSimposiumsContainer() => ListView.builder(
   itemCount: filterSimposiums.length,
   itemBuilder: (BuildContext context, int index) {
     return InkWell(
-      radius: 0,
       onTap: () {
-        //Navigator.of(context).pushNamed("/individual_disease", arguments: {'id': diseases[index].uniqueId},);
+        final parameter = Parameter(id: simposiums[index].uniqueId ?? '');
+        Navigator.of(context).pushNamed('/individual_symposiums', arguments: parameter);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -103,7 +105,7 @@ Widget _allSimposiumsContainer() => ListView.builder(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 160,
+                width: 130,
                 height: 160,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -124,14 +126,14 @@ Widget _allSimposiumsContainer() => ListView.builder(
                         Text(
                           filterSimposiums[index].name ?? "",
                           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(
                           height: 5,
                         ),
                         Container(
-                          padding: EdgeInsets.only(top: 30),
+                          padding: EdgeInsets.only(top: 50),
                           child: Text(
                             filterSimposiums[index].subject ?? '',
                             style: TextStyle(color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w300, fontSize: 14),
@@ -148,9 +150,6 @@ Widget _allSimposiumsContainer() => ListView.builder(
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                             ),
-                        ),
-                        SizedBox(
-                          height: 5,
                         ),
                       ],
                     ),
