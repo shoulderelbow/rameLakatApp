@@ -1,10 +1,18 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:rame_lakat_app/data/models/PostedMaterial.dart';
 import 'package:rame_lakat_app/data/models/Simposium.dart';
+import '../../../data/models/Answer.dart';
 import '../../../data/models/Doctor.dart';
 import '../../../data/models/Institution.dart';
 import 'package:rame_lakat_app/data/models/Disease.dart';
-
 import '../../../data/models/News.dart';
+import '../../../data/models/Podcast.dart';
+import '../../../data/models/Question.dart';
+import '../../../data/models/Survey.dart';
+import '../../../data/models/User.dart';
 
 final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
 
@@ -16,41 +24,100 @@ class FirebaseApi {
   static Future<Institution> getInstitution(String id) async {
     var institutiondata = await _dataBase.collection("institutions").doc(id).get();
 
-    Institution institution = Institution(name: institutiondata['name']);
+    Institution institution = Institution(name: institutiondata['name'], pictureLocation: institutiondata['pictureLocation'], adress: institutiondata['adress'], workingTimes: institutiondata['workingTimes'], phone: institutiondata['phone'], longDescription: institutiondata['longDescription'], shortDescription: institutiondata['shortDescription']);
     return institution;
+  }
+
+  static Future<Simposium> getSymposium(String id) async {
+    print("************************");
+    var symposiumData = await _dataBase.collection('simposiums').doc(id).get();
+    print(symposiumData);
+    print("Aaaasdasdasdasdasdasdasdas");
+    Timestamp timestamp = symposiumData['date'];
+    DateTime date = timestamp.toDate();
+    print(date);
+    Simposium simposium = Simposium(name: symposiumData['name'], pictureLocation: symposiumData['pictureLocation'], subject: symposiumData['subject'], date: date, uniqueId: symposiumData['uniqueId'], symposiumText: symposiumData['symposiumText']);
+    return simposium;
   }
 
   static Future<Disease> getDisease(String id) async {
     var diseasesdata = await _dataBase.collection("diseases").doc(id).get();
-    Disease disease = Disease(name: diseasesdata['name']);
+    Disease disease = Disease(name: diseasesdata['name'], uniqueId: diseasesdata['uniqueId'], pictureLocation: diseasesdata['pictureLocation'], diseaseDescription: diseasesdata['diseaseDescription']);
     return disease;
   }
 
-  static Future<Doctor> getDoctor(String id) async {
-    var doctorData = await _dataBase.collection("doctors").doc(id).get();
+  static Future<User> getUser(String id) async {
+    var userDataa = await _dataBase.collection("users").doc(id).get();
+    var userData = userDataa.data();
+    print("**************");
+    print(userData);
+    print("**************");
+    User user = User(firstName: userData!['userFirstName'], lastName: userData['userLastName'], userName: userData['userName'], email: userData['userEmail'], uniqueId: userData['uniqueId'], city: userData['city'], profileImage: userData['profileImage']);
+    return user;
+  }
 
-    Doctor doctor = Doctor(firstName: doctorData["firstName"], lastName: doctorData["lastName"]);
+  static Future<News> getNew(String id) async {
+    var vesti = await _dataBase.collection("news").doc(id).get();
+    Timestamp timestamp = vesti['date'];
+    DateTime date = timestamp.toDate();
+    News news = News(name: vesti['name'], pictureLocation: vesti['pictureLocation'], type: vesti['type'], uniqueId: vesti['uniqueId'], date: date, newsText: vesti['newsText']);
+    return news;
+  }
 
-    return doctor;
+  static Future<List<User>> getUsers() async {
+    List<User> users = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("users").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      User user = User(uniqueId: data['uniqueId'], firstName: data['userFistName'], lastName: data['userLastName'], email: data['userEmail'], userName: data['userName'], city: data['city'], profileImage: data['profileImage']);
+      users.add(user);
+    }
+    return users;
+  }
+  
+  static Future<List<Podcast>> getPodcasts() async {
+    List<Podcast> podcasts = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("podcasts").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Podcast podcast = Podcast(name: data['name'], link: data['link']);
+      podcasts.add(podcast);
+    }
+    return podcasts;
+  }
+
+  static Future<List<Survey>> getSurveys() async {
+    List<Survey> surveys = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("tests").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Survey survey = Survey(name: data['name'], uniqueId: data['uniqueId'], pictureLocation: data['pictureLocation'], suggestion: data['suggesiton'], diseaseId: data['diseaseId'] );
+      surveys.add(survey);
+    }
+    return surveys;
   }
 
   static Future<List<Simposium>> getSimposiums() async {
     List<Simposium> simposiums = [];
-    QuerySnapshot querySnapshot = await _dataBase.collection("simposiums").get();
+    QuerySnapshot querySnapshot = await _dataBase.collection("simposiums").orderBy('date', descending: true).get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Simposium simposium = Simposium(name: data['name'], date: data['date'], uniqueId: data['uniqueId'], subject: data['subject'], pictureLocation: data['pictureLocation']);
+      print("#OJJIOJIOJOIJOJ");
+      print(data);
+      Timestamp timestamp = data['date'];
+      DateTime date = timestamp.toDate();
+      Simposium simposium = Simposium(name: data['name'], date: date, uniqueId: data['uniqueId'], subject: data['subject'], pictureLocation: data['pictureLocation'], symposiumText: data['symposiumText']);
       simposiums.add(simposium);
     }
     return simposiums;
   }
 
-  static Future<List<Doctor>> getDoctors() async {
+  static Future<List<Doctor>> getDoctors(String id) async {
     List<Doctor> doctors = [];
-    QuerySnapshot querySnapshot = await _dataBase.collection("doctors").get();
+    QuerySnapshot querySnapshot = await _dataBase.collection("institutions").doc(id).collection("doctors").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
-      var data = querySnapshot.docs[i].data() as Map;
-      Doctor doctor = Doctor(firstName: data['firstName'], lastName: data['lastName'], fieldOfExpertise: data['fieldOfExpertise'], institution: data['institution'], phoneNumber: data['phoneNumber'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId'], workingTimes: data['workingTimes']);
+      var doctorData = querySnapshot.docs[i].data() as Map;
+      Doctor doctor = Doctor(name: doctorData["name"], email: doctorData["email"], phone: doctorData["phone"], fieldOfExpertise: doctorData["fieldOfExpertise"], pictureLocation: doctorData['pictureLocation']);
       doctors.add(doctor);
     }
     return doctors;
@@ -61,7 +128,7 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("diseases").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Disease disease = Disease(name: data['name'], pictureLocation: data['pictureLocation']);
+      Disease disease = Disease(name: data['name'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId'], diseaseDescription: data['diseaseDescription']);
       diseases.add(disease);
     }
     return diseases;
@@ -72,7 +139,7 @@ class FirebaseApi {
     QuerySnapshot querySnapshot = await _dataBase.collection("institutions").get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      Institution institution = Institution(name: data['name'], adress: data['adress'], longDescription: data['longDescription'], shortDescription: data['shortDescription'], workingTimes: data['workingTimes'], pictureLocation: data['pictureLocation']);
+      Institution institution = Institution(name: data['name'], adress: data['adress'], longDescription: data['longDescription'], shortDescription: data['shortDescription'], workingTimes: data['workingTimes'], pictureLocation: data['pictureLocation'], uniqueId: data['uniqueId']);
       institutions.add(institution);
     }
     return institutions;
@@ -80,18 +147,71 @@ class FirebaseApi {
 
   static Future<List<News>> getNews() async {
     List<News> news = [];
-    QuerySnapshot querySnapshot = await _dataBase.collection("news").get();
+    QuerySnapshot querySnapshot = await _dataBase.collection("news").orderBy('date', descending: true).get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var data = querySnapshot.docs[i].data() as Map;
-      print(data);
-      News novost = News(name: data['name'], type: data['type'],);
+      Timestamp t = data['date'];
+      DateTime date = t.toDate();
+      News novost = News(name: data['name'], type: data['type'], pictureLocation: data['pictureLocation'], date: date, uniqueId: data['uniqueId'], newsText: data['newsText']);
       news.add(novost);
     }
+
     print(news.length);
     return news;
   }
 
 
+  static Future<List<Question>> getQuestions(String testId) async {
+    List<Question> questions = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("tests").doc(testId).collection("questions").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Question question = Question(name: data['name'], points: data['points'], questionId: data['questionId'], order: data['order']);
+      List<Answer> answers = await getAnswers(data['questionId'], testId);
+      question.answers = answers;
+
+      questions.add(question);
+    }
+    print(questions.length);
+    return questions;
+  }
+
+  static Future<List<Answer>> getAnswers(String questionId, String testId) async {
+    List<Answer> answers = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("tests").doc(testId).collection("questions").doc(questionId).collection("answers").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      Answer answer = Answer(name: data['name'], uniqueId: data['uniqueId']);
+      answers.add(answer);
+    }
+    return answers;
+  }
+
+  static Future<List<PostedMaterial>> getPostedMaterials() async {
+    List<PostedMaterial> postedMaterials = [];
+    QuerySnapshot querySnapshot = await _dataBase.collection("materials").get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var data = querySnapshot.docs[i].data() as Map;
+      PostedMaterial postedMaterial = PostedMaterial(name: data['name'], type: data['type'], link: data['link'],);
+      postedMaterials.add(postedMaterial);
+    }
+    return postedMaterials;
+  }
+  static Future<void> uploadImage({
+    required String profileImage,
+    required String uniqueId,
+  }) async {
+    DocumentReference usersDocument = _dataBase.collection('users').doc(uniqueId);
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "profileImage": profileImage,
+    };
+
+    await usersDocument
+        .update(data)
+        .whenComplete(() => print("Notes item added to the database"))
+        .catchError((e) => print(e));
+  }
 
   static Future<void> addUser({
     required String userEmail,
@@ -99,6 +219,7 @@ class FirebaseApi {
     required String userPassword,
     required String userFirstName,
     required String userLastName,
+    required String userName,
     required String? userId,
   }) async {
     DocumentReference usersDocument =
@@ -110,11 +231,11 @@ class FirebaseApi {
       "userPassword": userPassword,
       "userFirstName" : userFirstName,
       "userLastName" : userLastName,
+      "userName" : userName,
     };
 
 
-
-    await usersDocument
+        await usersDocument
         .set(data)
         .whenComplete(() => print("Notes item added to the database"))
         .catchError((e) => print(e));

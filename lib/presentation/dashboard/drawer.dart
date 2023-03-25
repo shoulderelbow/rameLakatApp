@@ -1,14 +1,17 @@
 import 'dart:ui';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:rame_lakat_app/bussines_logic/services/common/shared_prefs.dart';
 import 'package:rame_lakat_app/presentation/common/app_assets.dart';
 import 'package:rame_lakat_app/presentation/common/app_colors.dart';
 import 'package:rame_lakat_app/presentation/common/app_strings.dart';
 
+import '../../bussines_logic/services/authentication/user_auth.dart';
 
-
+var language = GetStorage().read("language") ?? 'sr';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({Key? key}) : super(key: key);
@@ -18,75 +21,131 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  var language;
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        children: [
-          _drawerHeader(),
-          const SizedBox(
-            height: 15,
-          ),
-          _listItem(AppAssets.doctorImagePng, "Doctors".tr(), () {
-            Navigator.of(context).pushNamed('/doctors');
-          }),
-          _listItem(
-              AppAssets.myAppointmentIconPng, AppStrings.diseasesLabel.tr(),
-                  () {
-                Navigator.of(context).pushNamed('/diseases');
-              }),
-          _listItem(
-              AppAssets.newAppointmentsIconPng, AppStrings.medicalInstitutionsLabel.tr(),
-                  () {
-                Navigator.of(context).pushNamed('/institutions');
-              }),
-          _listItem(
-              AppAssets.simposiumImagePng, AppStrings.simposiumLabel.tr(), () {
-                Navigator.of(context).pushNamed('/simposiums');
-          }),
-          _listItem(
-              AppAssets.accountSettingsIconPng, AppStrings.MyProfile.tr(),
-                  () {
-                Navigator.of(context).pushNamed('/doctor_details');
-              }),
-          _listItem(AppAssets.helpIconPng, AppStrings.helpLabel.tr(), () {}),
-          SizedBox(
-            height: 15,
-          ),
-          Row(children: [
-            SizedBox(width: 15,),
-            GestureDetector(
-              onTap: (){
-                setState(() {
-                  language = context.locale.languageCode;
-                  if(language == 'sr') {
-                    setState(() {
-                      context.setLocale(Locale('en'));
-                    });
-                  }
-                });
-              },
-              child: Container(child: Image.network("https://e1.pngegg.com/pngimages/934/992/png-clipart-world-flag-icons-round-usa-flag-art-thumbnail.png", height: 44, width: 44,)),
+      child: Container(
+        height: MediaQuery.of(context).size.height*0.5,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: [
+                  _drawerHeader(),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  _listItem(AppAssets.accountSettingsIconPng, AppStrings.MyProfile.tr(), () {
+                    Navigator.of(context).pushNamed('/my_profile');
+                  }),
+                  _listItem(AppAssets.injury, AppStrings.diseasesLabel.tr(), () {
+                    Navigator.of(context).pushNamed('/diseases');
+                  }),
+                  _listItem(AppAssets.medicalInstitutions, AppStrings.medicalInstitutionsLabel.tr(), () {
+                    Navigator.of(context).pushNamed('/institutions');
+                  }),
+                  _listItem(AppAssets.simposiumImagePng, AppStrings.simposiumLabel.tr(), () {
+                    Navigator.of(context).pushNamed('/simposiums');
+                  }),
+                  _listItem(AppAssets.podcastIconPng, AppStrings.podcastLabel.tr(), () {
+                    Navigator.of(context).pushNamed('/podcasts_and_materials');
+                  }),
+                  _listItem(AppAssets.logoutIconPng, AppStrings.logoutLabel.tr(), () async {
+                    UserAuth userAuthService = UserAuth(firebaseAuth: FirebaseAuth.instance, fireStore: FirebaseFirestore.instance);
+                    await userAuthService.signOut();
+                    SharedPrefs().removeUser();
+                    Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                  }),
+                ],
+              ),
             ),
-            SizedBox(width: 30,),
-            GestureDetector(
-              onTap: (){
-                  setState(() {
-                    language = context.locale.languageCode;
-                    if(language == 'en') {
+
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 25,
+                  ),
+                  GestureDetector(
+                    onTap: () {
                       setState(() {
-                        context.setLocale(Locale('sr'));
+                        language = context.locale.languageCode;
+                        if (language == 'sr') {
+                          setState(() {
+                            context.setLocale(Locale('en'));
+                            language = 'en';
+                            GetStorage().write("language", "en");
+                          });
+                        }
                       });
-                    }
-                  });
-                },
-              child: Container(child: Image.network("https://aux.iconspalace.com/uploads/1082282745.png", height: 32, width: 32,)),
+                    },
+                    child: Container(
+                        child: Image.asset(
+                          "images/usaflag.png",
+                          height: 30,
+                          width: 30,
+                        ),
+                      decoration: language == 'en' ? BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black54.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ) : BoxDecoration(),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 30,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        language = context.locale.languageCode;
+
+                        if (language == 'en') {
+                          setState(() {
+                            context.setLocale(Locale('sr'));
+                            language = 'sr';
+                            GetStorage().write("language", "sr");
+                          });
+                        }
+                      });
+                    },
+                    child: Container(
+                      child: Image.asset(
+                        "images/serbiaflag.png",
+                        height: 32,
+                        width: 32,
+                      ),
+                      decoration: language == 'sr' ? BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black54.withOpacity(0.4),
+                            spreadRadius: 5,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ) : BoxDecoration(),
+                    ),
+                  ),
+                ],
+              ),
             ),
-    ],),
-          _listItem(AppAssets.logoutIconPng, AppStrings.logoutLabel.tr(), () {})
-        ],
-    ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -103,13 +162,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
               Container(
                 width: 75.0,
                 height: 75.0,
-                child: AppAssets.profileImagePng,
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(SharedPrefs().getUser().profileImage),
+                ),
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(50.0)),
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 3.0,
-                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
                 ),
               ),
               Padding(
@@ -119,27 +176,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${SharedPrefs()
-                          .getUser()
-                          .firstName} ${SharedPrefs()
-                          .getUser()
-                          .lastName}',
-                      style: const TextStyle(
-                          color: AppColors.primaryColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600),
+                      '${SharedPrefs().getUser().firstName} ${SharedPrefs().getUser().lastName}',
+                      style: const TextStyle(color: AppColors.primaryColor, fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(
                       height: 5,
                     ),
                     Text(
-                      SharedPrefs()
-                          .getUser()
-                          .email,
-                      style: const TextStyle(
-                          color: AppColors.darkTextColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500),
+                      SharedPrefs().getUser().email,
+                      style: const TextStyle(color: AppColors.darkTextColor, fontSize: 14, fontWeight: FontWeight.w500),
                     )
                   ],
                 ),
@@ -149,7 +194,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         ),
       ),
       decoration: const BoxDecoration(
-        color: AppColors.backGroundColor,
+          color: AppColors.backGroundColor,
       ),
     );
   }
@@ -163,17 +208,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(child: imageAsset, height: 22, alignment: Alignment.center,),
-            const SizedBox(
+            Container(
+              child: imageAsset,
+              height: 22,
+              alignment: Alignment.center,
+            ),
+            SizedBox(
               width: 12,
             ),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: AppColors.commonTextColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400),
+              style: TextStyle(color: AppColors.commonTextColor, fontSize: 16, fontWeight: FontWeight.w400),
             )
           ],
         ),
@@ -181,4 +227,3 @@ class _CustomDrawerState extends State<CustomDrawer> {
     );
   }
 }
-

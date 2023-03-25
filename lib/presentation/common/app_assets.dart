@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class AppAssets {
   static final Widget blueHeartPng = Image.asset(
@@ -25,6 +26,10 @@ class AppAssets {
     'images/ForumCardBg.png',
   );
 
+  static final Widget postedMaterialPng = Image.asset(
+    'images/postedMaterial.png',
+  );
+
   static final Widget helpIconPng = Image.asset(
     'images/ForumCardBg.png',
   );
@@ -37,20 +42,16 @@ class AppAssets {
     'images/MedicalRecordsIcon.png',
   );
 
-  static final Widget myAppointmentIconPng = Image.asset(
-    'images/MyAppointmentIcon.png',
+  static final Widget injury = Image.asset(
+    'images/injury_icon.png',
   );
 
-  static final Widget newAppointmentsIconPng = Image.asset(
-    'images/NewAppointmentsIcon.png',
+  static final Widget medicalInstitutions = Image.asset(
+    'images/medicalInstitutions.png',
   );
 
   static final Widget profileIconPng = Image.asset(
     'images/ProfileIcon.png',
-  );
-
-  static final Widget profileImagePng = Image.asset(
-    'images/ProfileImage.png',
   );
 
   static final Widget recordsCardBgPng = Image.asset(
@@ -111,5 +112,33 @@ class AppAssets {
 
   static final Widget simposiumImagePng = Image.asset(
     'images/symposium.png',
+  );
+
+  static final Widget surveyImagePng = Image.asset(
+      'images/survey.png',
+  );
+
+  static final Widget usaFlagPng = Image.asset(
+    'images/usaflag.png'
+  );
+
+  static final Widget serbiaFlagPng = Image.asset(
+    'images/serbiaflag.png'
+  );
+
+  static final Widget podcastIconPng = Image.asset(
+    'images/podcast.png'
+  );
+
+  static final Widget bookIconPng = Image.asset(
+    'images/book.png'
+  );
+
+  static final Widget videoIconPng = Image.asset(
+    'images/video.png'
+  );
+
+  static final Widget musicIconPng = Image.asset(
+      'images/music.png'
   );
 }

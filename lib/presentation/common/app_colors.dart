@@ -17,7 +17,7 @@ class AppColors {
   static const primaryColor = Color(0xFF2A2AC0);
   static const primaryDark = Color(0xFF181461);
   static const primaryColorOp01 = Color.fromRGBO(42, 42, 192, .1);
-  static const backGroundColor = Color(0xFFECF1FA);
+  static const backGroundColor = Color(0xFFECF1F9);
   static const darkTextColor = Color(0xFF181461);
   static const commonTextColor = Color(0xFF1C1C1C);
   static const facebookButtonColor = Color(0xFF3A559F);

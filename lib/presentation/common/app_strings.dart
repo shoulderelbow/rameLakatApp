@@ -16,8 +16,8 @@ class AppStrings {
   static const termsAndConditionPart1 = "By signing in, you accept our";
   static const termsAndConditionPart2 = " Terms and Conditions";
   static const login = "Login";
-  static const email = "email";
-  static const password = "password";
+  static const email = "E-mail";
+  static const password = "Password";
 
 // Login With Mobile
   static const continueText = "Continue";
@@ -39,7 +39,7 @@ class AppStrings {
   static const searchText = "Search";
   static const sampleDrawerHeaderText = "Sophie Garnier";
   static const sampleDrawerHeaderSubText = "Luxembourg";
-  static const dashboardLabel = "Dashboard";
+  static const newsLabel = "News";
   static const appointmentsCardLabel = "Appointments";
   static const recordsCardLabel = "Records";
   static const forumCardLabel = "Forum";
@@ -57,6 +57,9 @@ class AppStrings {
   static const accountSettingsLabel = "Account settings";
   static const helpLabel = "Help";
   static const logoutLabel = "Logout";
+  static const surveyLabel = "Survey";
+  static const podcastLabel = "PodcastAndMaterial";
+  static const postedMaterialLabel = "Material";
 
   // Search Appointment
   static const bookAppointmentLabel = "Book an appointment";
